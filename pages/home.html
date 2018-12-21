@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Movie addicts</title>
+	<html lang="en-US"><!-- added by Tamas -->
+	<link rel="icon" href="../static/32396-popcorn-icon.png"><!-- added by Tamas -->
+	<meta name="Description" content="Team #1 project"><!-- added by Tamas -->
+	<meta http-equiv="X-UA-Compatible" content="IE-Edge"><!-- added by Tamas -->
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+	<link rel="stylesheet" type="text/css" href="../static/auth.css"><!-- added by Tamas -->
+
+</head>
+
+<body>
+	<section id='sectionUserAuth'  style="display:none"><!-- added by Tamas -->
+			<label id='labelUserAuthStatus' class="auth-label_name "></label>
+			<div id='divUserAuthUsername' class="auth-display-block" style="display:none">
+				<label class="auth-label_name ">Username</label>
+				<label name="labelUserName" id="labelUserName" ></label>
+			</div>
+			<div class="auth-display-block">
+				<button type="button" id='btnUserAuth'></button>
+			</div>
+	</section>
+	<div id="moviesSubmit"></div>
+	<div id="movies"></div>
+	<div id="template" style="display:none">
+		<h3 class="movie-header">
+			<span class="movie-title"></span>
+		</h3>
+		<p class="movie-year"></p>
+		<p class="movie-runtime"></p>
+		<p class ="movie-genre"></p>
+		<img class="movie-poster" alt="movie-poster">
+
+		<button class="movie-details">More Details</button>
+		<button class="movie-delete">Delete</button>
+        <button class="movie-edit">Edit</button>
+
+
+		
+	</div>
+	<div id="pagination"></div>
+	<div id="pagination-template" style="display:none">
+		<button class="pages-btn"></button>
+	</div>
+	<div id="regenerate-movies">
+		<button class="movie-regenerateMovies">Regenerate Movies</button>
+
+	</div>
+	<script src="../models/Movies.js" type='text/javascript'></script>
+	<script src="../models/Movie.js" type='text/javascript'></script>
+	<script src="../views/home.js" type='text/javascript'></script>
+	<script src='../models/Auth.js' type='text/javascript'></script><!-- added by Tamas -->
+	<script src='../models/Storage.js' type='text/javascript'></script><!-- added by Tamas -->
+	<script src="../views/authInclude.js" type='text/javascript'></script><!-- added by Tamas -->
+</body>
+ </html>

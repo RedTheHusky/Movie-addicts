@@ -1,0 +1,67 @@
+<html>
+
+<head>
+	<title>Movie details</title>
+	<link rel="icon" href="../static/32396-popcorn-icon.png"><!-- added by Tamas -->
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- <link rel="stylesheet" href="../../css/index.css"> -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="../static/auth.css"><!-- added by Tamas -->
+</head>
+
+<body>
+	<section id='sectionUserAuth'  style="display:none"><!-- added by Tamas -->
+			<label id='labelUserAuthStatus' class="auth-label_name "></label>
+			<div id='divUserAuthUsername' class="auth-display-block" style="display:none">
+				<label class="auth-label_name ">Username</label>
+				<label name="labelUserName" id="labelUserName" ></label>
+			</div>
+			<div class="auth-display-block">
+				<button type="button" id='btnUserAuth'></button> 
+			</div>
+	</section>
+	<div id="movieDetails"></div>
+	<div id="template">
+		<h3 class="movie-header">
+			<!-- <span class="game-id"></span>  -->
+			<span class="movie-title"&nbsp;></span>
+
+			(<span class="movie-year"></span>)
+		</h3>
+		<div class="subtext">
+
+			<span class="movie-runtime"></span>
+
+			<span class="ghost">|</span>
+
+			<span class="movie-genre"></span>
+
+		</div>
+
+
+		<img class="movie-poster" alt="movie-poster" height="70%" width="60%">
+
+		<p class="movie-plot"></p>
+		
+		<p class="director">Director : <span class="movie-director"></span></p> 
+
+		<p class="writer">Writer : <span class="movie-writer"></span></p>
+
+		<p class="language">Language : <span class="movie-language"></span></p>
+
+		<p class="country">Country : <span class="movie-country"></span></p>
+
+		<p class="imdbRating">imdb Rating : <span class="movie-imdbRating"></span></p>
+		
+		<p class="actors">Actors : <span class="movie-actors"></span></p>
+		
+	</div>
+ 	<script src="../models/Movie.js"></script>
+	<script src='../models/Auth.js' type='text/javascript'></script><!-- added by Tamas -->
+	<script src='../models/Storage.js' type='text/javascript'></script><!-- added by Tamas -->
+	<script src="../views/authInclude.js"></script><!-- added by Tamas -->
+	<script src="../views/movieDetails.js"></script>
+</body>
+
+</html>

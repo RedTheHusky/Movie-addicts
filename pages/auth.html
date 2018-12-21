@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title> Register or Sign in</title>
+	<link rel="icon" href="../static/32396-popcorn-icon.png">
+	<link rel="stylesheet" href="../css/auth.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="UTF-8" />
+	<meta name="Description" content="Register or Sign in to manage database.">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+	<script async src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src='../models/Auth.js' type='text/javascript'></script>
+	<script src='../models/AuthRegister.js' type='text/javascript'></script>
+	<script src='../models/Storage.js' type='text/javascript'></script>
+</head>
+<body>
+	<div id='authRoot'>
+	<form id="authLoginOrRegister" class="" style="display:none">
+		<section id='sectionUserAcc' class="auth-padding auth-bar-border" >
+			<div id="back4Register" class="auth-display-block" style="display:none">
+				<button type="button" id='btnBack2LogIn'>Go back to Log in</button> 
+			</div>
+			<div class="auth-display-block" >
+				<label  id="modeLabel" class="auth-label_name ">User LogIn</label>
+			</div>
+			
+			<div class="auth-display-block">
+				<label for="inputUsername" class="auth-label_name ">Username:</label>
+				<input type="text" name="inputUsername" id="inputUsername"  autocomplete="username" placeholder="Enter Username." />
+			</div>
+			<div id="email2Register" class="auth-display-block" style="display:none">
+				<label for="inputEmail" class="auth-label_name ">Email:</label>
+				<input type="text" name="inputEmail" id="inputEmail"  autocomplete='email' placeholder="Enter Email." />
+			</div>
+			<div class="auth-display-block">
+				<label for="inputPassword" class="auth-label_name ">Password:</label>
+				<input type="password" name="inputPassword" id="inputPassword"  autocomplete="current-password" placeholder="Enter Password." />
+			</div>
+			<div id="password2Register" class="auth-display-block" style="display:none">
+				<label for="inputConfirmPassword" class="auth-label_name ">Confirm Password:</label>
+				<input type="password" name="inputConfirmPassword" id="inputConfirmPassword"  autocomplete='new-password' placeholder="Enter Confirm Password." />
+			</div>
+			<div id="recaptcha2Register" class="auth-display-block" style="display:none">
+				<div id="add_g-recaptcha_here"></div>
+			</div>
+			<div class="auth-display-block">
+				<button type="button" id='btnGo2Register' style="display:none">New User</button> 
+				<button type="button" id='btnLogInOrRegister' >Sign In</button> 
+			</div>
+			<div class="auth-display-block">
+				<label id="statusLogInOrRegister" class="auth-label_name auth-color_red"></label>
+			</div>
+		</section> 		
+	</form>
+	</div>
+	<script src='../views/auth.js' type='text/javascript'></script>	
+	<script src='https://www.google.com/recaptcha/api.js?onload=displayNewUserButton&render=explicit'></script>
+</body>
+</html>
