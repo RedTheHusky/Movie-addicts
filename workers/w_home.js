@@ -1,8 +1,6 @@
 var CACHE_NAME = 'my-site-cache-v1';
 var urlsToCache = [
-  '/',
-  '/styles/main.css',
-  '/script/main.js'
+  '/'
 ];
 
 self.addEventListener('install', function(event) {
@@ -10,7 +8,9 @@ self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
+		console.groupCollapsed('install');
         console.log('Opened cache');
+		console.groupEnd();   
         return cache.addAll(urlsToCache);
       })
   );
