@@ -1,3 +1,4 @@
+//component based on the idea of Modules 
 //need to replace this with Modules and not Models but can't figure out why import is not working 
 //allows optionally dynamically loading the bootstrap resources 
 //allows multiple modal to exist on the same page just by creating a new instant of the class as each modal gets its own unique id

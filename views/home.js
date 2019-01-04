@@ -24,7 +24,6 @@ function modalLoad(){
 	modalElements["auth"]= new authModal({root:"modalRoot"});
 	modalElements["auth"].addModal2Root();
 	modalElements["auth"].add2Head();
-	modalElements["auth"].getURLDatas();
 	modalElements["auth"].displayLogIn();
 	modalElements["submit"].addEvents();
 	modalElements["auth"].addEvents();

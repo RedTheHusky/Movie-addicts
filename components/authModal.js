@@ -1,3 +1,5 @@
+//component based on the idea of Modules 
+//need to replace this with Modules and not Models but can't figure out why import is not working 
 class authModal {
 	constructor(options={}) {
 		console.groupCollapsed('constructor');
@@ -12,7 +14,7 @@ class authModal {
 		this.modal="";
 		this.widgetId=-1;
 		this.id=uuidv4();
-		this.profile={mode:1,notification:0,eye:0,page:'',search:'',protocol:''};
+		this.profile={mode:1,eye:0,protocol:''};
 		this.settings={nameLength_min:6,nameLength_max:36,passwordLength_min:6,passwordLength_max:36, classList:{invalid:"error-content"}};
 		if(options.root){
 			this.root.id = options.root;
@@ -24,6 +26,8 @@ class authModal {
 				this.addModal2Root();
 			}
 		}
+		this.profile.protocol=location.protocol;
+		console.log('profile.protocol=',this.profile.protocol);
 		this.objName=this.constructor.name;
 		console.groupEnd();
 	}
@@ -69,7 +73,7 @@ class authModal {
 					<input type="text" name="email" placeholder='Email' value="" class="text-input form-control register-input inputKeyupCheck">
 				</div>
 				<div class='form-group' style="display:block">
-					<input type="password" name="password" value="" placeholder='Password' class="text-input form-control inputKeyupCheck" style="display:inline; width:90%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="25" width="20"></button>
+					<input type="password" name="password" value="" placeholder='Password' class="text-input form-control inputKeyupCheck" style="display:inline; width:90%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline;"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="25" width="20"></button>
 				</div>
 				<div class='form-group register-group' >
 					<input type="password" name="inputConfirmPassword" value="" placeholder='Retype your Password' class="text-input form-control register-input inputKeyupCheck" >
@@ -139,24 +143,6 @@ class authModal {
 		this.modal.modal.dom.querySelector('.bt-newuserOrback').innerHTML="Back";
 		this.modal.modal.dom.querySelector('.bt-loginOrRegister').innerHTML="Register";
 		
-		console.groupEnd();
-	}
-	getURLDatas(){
-		console.groupCollapsed('getURLDatas');
-		function getUrlParameter(name) {
-			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-			var results = regex.exec(location.search);
-			return results === null
-			? ""
-			: decodeURIComponent(results[1].replace(/\+/g, " "));
-		}
-		this.profile.protocol=location.protocol;
-		console.log('profile.protocol=',this.profile.protocol);
-		this.profile.page=getUrlParameter('page');
-		this.profile.search=getUrlParameter('search');
-		console.log('profile.page:',this.profile.page);
-		console.log('profile.search:',this.profile.search);
 		console.groupEnd();
 	}
 	addEvents(){
@@ -433,9 +419,9 @@ class authModal {
 		if(options.body){
 			this.modal.modal.dom.querySelector('.notification').innerHTML=options.body;
 		}
-		if(options.title){
+		/*if(options.title){
 			this.modal.modal.dom.querySelector('.modal-title').innerHTML=options.title;
-		}
+		}*/
 		this.modal.modal.dom.querySelector('.bt-loginOrRegister').style.display="none";
 		this.modal.modal.dom.querySelector('.bt-newuserOrback').style.display="none";
 		this.modal.modal.dom.querySelector('.loginOrRegister').style.display="none";
@@ -451,7 +437,7 @@ class authModal {
 			console.log('data=',data);
 			let me=this;
 			this.displayNotification({type:1,body:"<p>Please wait</p>"});
-			AuthRegister.userLogIn(data)
+			Auth.userLogIn(data)
 			.then(
 				function(resolve){
 					console.log('AuthRegister.userLogIn response:resolve=',resolve);
@@ -477,7 +463,8 @@ class authModal {
 			console.log('data=',data);
 			this.displayNotification({type:1,body:"<p>Please wait</p>"});
 			let me=this;
-			AuthRegister.userRegister(data)
+			let use;
+			Auth.userRegister(data)
 			.then(
 				function(resolve){
 					console.log('AuthRegister.userRegister response:resolve=',resolve);
@@ -508,11 +495,7 @@ class authModal {
 	}
 	doAfterSuccessResponse(){
 		console.warn('success');
-		if(this.profile.page){
-			console.groupEnd();window.location = profile.page+profile.search;
-		}else{
-			console.groupEnd();window.location = "home.html";	
-		}	
+		location.reload();	
 	}
 	doAfterRejectedResponse(response=""){
 		console.groupCollapsed('doAfterRejectedResponse');

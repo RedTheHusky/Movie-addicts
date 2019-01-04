@@ -1,5 +1,6 @@
 var movie = new Movie();
 var backgroundSync;
+var modalElements={};
 function backgroundSyncLoad(){
 	console.groupCollapsed('backgroundSyncLoad');
 	if(Worker){
@@ -10,6 +11,19 @@ function backgroundSyncLoad(){
 	}
 	console.groupEnd();
 }
+function modalLoad(){
+	console.groupCollapsed('modalLoad');
+	modalElements["notification"]= new Modal({root:"modalRoot"});
+	modalElements["notification"].addModal2Root();
+	modalElements["auth"]= new authModal({root:"modalRoot"});
+	modalElements["auth"].addModal2Root();
+	modalElements["auth"].add2Head();
+	modalElements["auth"].displayLogIn();
+	modalElements["auth"].addEvents();
+	console.groupEnd();
+}
+backgroundSyncLoad();
+modalLoad();
 movie.id = getUrlParameter("_id");
 movie.getMovieDetails().then(function() {
   console.log("Movie details : ", movie);

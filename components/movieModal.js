@@ -1,3 +1,5 @@
+//component based on the idea of Modules 
+//need to replace this with Modules and not Models but can't figure out why import is not working 
 class movieModal {
 	constructor(options={}) {
 	console.groupCollapsed('constructor');
