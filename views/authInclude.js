@@ -42,22 +42,22 @@ function addUserAuth(){
 					function(resolve){
 						console.log('AuthRegister.userLogOut response:resolver=',resolve);	
 						window.location = data.page+data.search;
-						}
-				).catch(
+					},
 					function(reject){
 						console.log('AuthRegister.userLogOut response:reject=',reject);	
 						if(reject.response&&reject.response.responseJSON&&reject.response.responseJSON.message){
 							alert(reject.response.responseJSON.message);	
-						}else{
+						}else if(reject.message){
 							alert(reject.message);	
 						}
 					}
 				);
 			}else{
 				console.log('not loged in');
-				let wlocation="auth.html?page="+dataEncode.page+'&search='+dataEncode.search;
+				modalElements["auth"].show();
+				/*let wlocation="auth.html?page="+dataEncode.page+'&search='+dataEncode.search;
 				console.log('location=',wlocation);
-				window.location = wlocation;	
+				window.location = wlocation;	*/
 			}
 			console.groupEnd();
 		});

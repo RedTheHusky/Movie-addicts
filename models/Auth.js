@@ -1,4 +1,3 @@
-
 class Auth{	
 	static baseURL(){return "https://ancient-caverns-16784.herokuapp.com";}	
 	static getAccessToken(){
@@ -38,22 +37,17 @@ class Auth{
 		url: HttpAddress_Get,
 		method: 'GET',
 		headers: {'X-Auth-Token' : token} })
-		.then(function(response) {
-			console.log('GetHttpRequest:','success=',response);
+		.done(function( resolve ) {
+			console.log('GetHttpRequest:','success=',resolve);
 			KeyHelper.keyRemove('accessUsername');
 			KeyHelper.keyRemove('accessToken');
-			return {message:response};
-			
-			},
-			function(response) {
-				console.warn('GetHttpRequest:','fail=',response);
-				if(response){
-					return {response:response} ;
-				}else{
-					return {message:'Unknown Error'} ;
-				}
-			}
-		)
+			return{resolve};
+		})
+		.fail(function(reject) {
+			console.warn('GetHttpRequest:','fail=',reject);
+			if(!reject){reject={message:"Unknown Error"};}
+			return{reject};
+		});
 	}
 	
 }

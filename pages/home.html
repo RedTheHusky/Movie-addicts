@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 	<title>Movie addicts</title>
@@ -10,8 +10,12 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/styles.css">
-	<link rel="stylesheet" type="text/css" href="../static/auth.css"><!-- added by Tamas -->
+	<link rel="stylesheet" type="text/css" href="../css/auth.css"><!-- added by Tamas -->
+	<script src='../components/Modal.js' type='text/javascript'></script>
+	<script src='../components/authModal.js' type='text/javascript'></script>
 
 </head>
 
@@ -24,8 +28,10 @@
 			</div>
 			<div class="auth-display-block">
 				<button type="button" id='btnUserAuth'></button>
+				
 			</div>
 	</section>
+	<div id='modalRoot'></div>
 	<div id="moviesSubmit"></div>
 	<div id="movies"></div>
 	<div id="template" style="display:none">
@@ -54,9 +60,10 @@
 	</div>
 	<script src="../models/Movies.js" type='text/javascript'></script>
 	<script src="../models/Movie.js" type='text/javascript'></script>
-	<script src="../views/home.js" type='text/javascript'></script>
 	<script src='../models/Auth.js' type='text/javascript'></script><!-- added by Tamas -->
+	<script src='../models/AuthRegister.js' type='text/javascript'></script>
 	<script src='../models/Storage.js' type='text/javascript'></script><!-- added by Tamas -->
 	<script src="../views/authInclude.js" type='text/javascript'></script><!-- added by Tamas -->
+	<script src="../views/home.js" type='text/javascript'></script>
 </body>
  </html>

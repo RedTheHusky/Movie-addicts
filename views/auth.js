@@ -26,6 +26,7 @@ function addDomElements(){
 	add("btnGo2Register");
 	add('btnLogInOrRegister');
 	add("statusLogInOrRegister");
+	add("passwordEye");
 	console.log('domElements=',domElements);
 	console.groupEnd();
 }
@@ -101,7 +102,7 @@ function recaptchaError(response=''){
 	console.groupEnd();
 }
 function displayNewUserButton(){
-	console.groupCollapsed('displayDomRegister');
+	console.groupCollapsed('displayNewUserButton');
 	displayDomLogIn();
 	console.groupEnd();
 }
@@ -169,6 +170,18 @@ function addEvents(){
 			console.warn('key:',key,' does not exists');
 		}
 	}
+	domElements["passwordEye"].addEventListener("mouseover", function(event){
+		event.preventDefault();
+		console.groupCollapsed('passwordEye:mouseover');
+		domImputElements["inputPassword"].setAttribute('type', 'text');
+		console.groupEnd();
+	});
+	domElements["passwordEye"].addEventListener("mouseleave", function(event){
+		event.preventDefault();
+		console.groupCollapsed('passwordEye:mouseleave');
+		domImputElements["inputPassword"].setAttribute('type', 'password');
+		console.groupEnd();
+	});
 	console.groupEnd();
 	console.groupEnd();
 }
@@ -245,8 +258,20 @@ function getURLDatas(){
 	console.log('profile.search:',profile.search);
 	console.groupEnd();
 }
+
+var modalNotification;
+function ddd(){
+	console.log("callback test");
+}
+function modalLoad(){
+	console.groupCollapsed('modalLoad');
+	modalNotification= new Modal({root:"modalRoot",addModal2Root:true,callback:ddd});
+	modalNotification.addModal2Root();
+	console.groupEnd();
+}
 function init() {
 	console.groupCollapsed('init');
+	modalLoad();
 	addDomElements();
 	getURLDatas();
 	addEvents();
@@ -256,7 +281,7 @@ function init() {
 init();
 
 function displayErrorLabelStatus(message=""){
-	console.groupCollapsed('displayLabelStatus');
+	console.groupCollapsed('displayErrorLabelStatus');
 	console.log('message:',message);
 	domElements["statusLogInOrRegister"].innerText=message;
 	console.groupEnd();
@@ -309,10 +334,12 @@ function inputCheck(){
 		console.warn('has error, will not commence ajax');
 		console.warn('errorLog=',errorLog);
 		if(profile.mode===1){
-			displayErrorLabelStatus("LogIn aborted do to conditions: "+errorLog.toString());
+			modalNotification.setElement([{selector:".modal-title", task:"inner", value:"Error at 'Log In' process."},{selector:".modal-body", task:"inner", value:"<p>LogIn aborted do to conditions:</p><p>"+errorLog.toString()+"</p>"}, "show"]);
+			//displayErrorLabelStatus("LogIn aborted do to conditions: "+errorLog.toString());
 		}else
 		if(profile.mode===2){
-			displayErrorLabelStatus("Registration aborted do to conditions: "+errorLog.toString());
+			modalNotification.setElement([{selector:".modal-title", task:"inner", value:"Error at 'Register' process."},{selector:".modal-body", task:"inner", value:"<p>Register aborted do to conditions:</p><p>"+errorLog.toString()+"</p>"}, "show"]);
+			//displayErrorLabelStatus("Registration aborted do to conditions: "+errorLog.toString());
 		}
 		console.warn('return:false');
 		console.groupEnd();
@@ -332,14 +359,15 @@ function callLogIn(){
 		console.log('data=',data);
 		AuthRegister.userLogIn(data)
 		.then(
-			function(result){
-				console.log('AuthRegister.userLogIn response:resolve=',result);
-				doAfterResponse(result);			
-			},function(result){
-				console.log('AuthRegister.userLogIn response:reject=',result);
-				doAfterResponse(result);			
+			function(resolve){
+				console.log('AuthRegister.userLogIn response:resolve=',resolve);
+				doAfterSuccessResponse();
+			},function(reject){
+				console.log('AuthRegister.userLogIn response:reject=',reject);
+				reject.called="Log in";
+				doAfterRejectedResponse(reject);		
 			}
-		);
+		)
 	}else{
 		console.warn('aborded');
 		console.groupEnd();
@@ -354,12 +382,13 @@ function callRegister(){
 		console.log('data=',data);
 		AuthRegister.userRegister(data)
 		.then(
-			function(result){
-				console.log('AuthRegister.userRegister response:resolve=',result);
-				doAfterResponse(result);		
-			},function(result){
-				console.log('AuthRegister.userRegister response:reject=',result);
-				doAfterResponse(result);		
+			function(resolve){
+				console.log('AuthRegister.userRegister response:resolve=',resolve);
+				doAfterSuccessResponse();
+			},function(reject){
+				console.log('AuthRegister.userRegister response:reject=',reject);
+				reject.called="Register";
+				doAfterRejectedResponse(reject);		
 			}
 		);
 	}else{
@@ -367,23 +396,27 @@ function callRegister(){
 		console.groupEnd();
 	}
 }
-function doAfterResponse(messageFromApi){
-	console.groupCollapsed('doAfterResponse');
-	console.log('messageFromApi',messageFromApi);
-	if(messageFromApi.error){
-		console.warn('error');
-		if(messageFromApi.error.responseJSON&&messageFromApi.error.responseJSON.message){
-			displayLabelStatus(messageFromApi.error.responseJSON.message);
-		}else{
-			displayErrorLabelStatus(messageFromApi.error);
-		}
-	}else if(messageFromApi.message){
-		console.warn('success');
-		if(profile.page){
-			console.groupEnd();window.location = profile.page+profile.search;
-		}else{
-			console.groupEnd();window.location = "home.html";	
-		}		
+function doAfterSuccessResponse(){
+	console.warn('success');
+	if(profile.page){
+		console.groupEnd();window.location = profile.page+profile.search;
+	}else{
+		console.groupEnd();window.location = "home.html";	
+	}	
+}
+function doAfterRejectedResponse(response=""){
+	console.groupCollapsed('doAfterRejectedResponse');
+	if(response.status){
+		console.warn('status:',response.status);
+	}
+	if(response.responseJSON&&response.responseJSON.message){
+		modalNotification.setElement([{selector:".modal-title", task:"inner", value:"Error at '"+response.called+"' process."},{selector:".modal-body", task:"inner", value:"<p>"+response.responseJSON.message+"</p>"}, "show"]);
+		//displayErrorLabelStatus(response.responseJSON.message);
+	}else
+	if(response.message){
+		modalNotification.setElement([{selector:".modal-title", task:"inner", value:"Error at '"+response.called+"' process."},{selector:".modal-body", task:"inner", value:"<p>"+response.message+"</p>"}, "show"]);
+		//displayErrorLabelStatus(response.message);
 	}
 	console.groupEnd();
 }
+
