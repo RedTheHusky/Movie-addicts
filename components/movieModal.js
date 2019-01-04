@@ -115,7 +115,7 @@ class movieModal {
 						}
 						if(doAfterFailedMovieEdit){
 							console.log("trigger doAfterFailedMovieEdit");
-							doAfterFailedMovieEdit({obj:me,response:response});
+							doAfterFailedMovieEdit({obj:me,response:reject});
 						}
 						//displayNotification(error);
 					}
@@ -124,7 +124,6 @@ class movieModal {
 			if(options.mode==="new"){
 				console.log('new movie');
 			}
-			
 			console.groupEnd();
 		});
 		}
@@ -173,8 +172,8 @@ class movieModal {
 			}
 		}
 		content_body+="</spam>";
-		this.modal.setElement([{selector:".modal-title", task:"inner", value:"Edit movie: "+response["Title"]||""},{selector:".modal-body", task:"inner", value:content_body}, "show"]);
 		console.groupEnd();
+		this.modal.setElement([{selector:".modal-title", task:"inner", value:"Edit movie: "+response["Title"]||""},{selector:".modal-body", task:"inner", value:content_body}, "show"]);
 	}
 	
 }

@@ -1,6 +1,6 @@
-var movies = new Movies();
-var modalElements={};
-var backgroundSync;
+let movies = new Movies();
+let modalElements={};
+let backgroundSync;
 modalLoad();
 backgroundSyncLoad();
 getMovies();
@@ -68,14 +68,16 @@ if (typeof someObject == 'undefined') $.loadScript(url_to_someScript,
 	}
 );
 function displayMovies() {
-  console.log("displayMovies");
-  var template = document.getElementById("template");
-  var moviesContainer = document.getElementById("movies");
-  moviesContainer.innerHTML = "";
-  // var regenerateMoviesContainer = document.getElementById("regenerate-movies");
-  console.log("display movies.items=", movies.items);
+	console.groupCollapsed('displayMovies');
+	var template = document.getElementById("template");
+	var moviesContainer = document.getElementById("movies");
+	moviesContainer.innerHTML = "";
+	// var regenerateMoviesContainer = document.getElementById("regenerate-movies");
+	console.log("display movies.items=", movies.items);
 	if(movies.items) //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
 	movies.items.forEach(function(movie,index){//element, index
+		console.groupCollapsed('movie[',index,']');
+		console.log('movie=',movie);
 		var moviesClone = template.cloneNode(true);
 		// set a unique id for each movie
 		moviesClone.id = "movie_" + movie._id;
@@ -98,7 +100,9 @@ function displayMovies() {
 		  });
 		moviesClone.style.display="initial";
 		moviesContainer.appendChild(moviesClone);
-		
+		if(!movie.getMovie){
+			console.warn("No movie.getMovie!");
+		}
 		moviesClone.querySelector(".movie-edit").addEventListener("click", function(){
 		  event.target.disabled = "true";
 		  editMovie(movie);
@@ -107,12 +111,14 @@ function displayMovies() {
 		moviesClone.querySelector(".movie-delete").addEventListener("click", function(){
 			deleteMovieOnClick(movie,index);
 		});
+		console.groupEnd(); 
 	});
 	 
 	if(Worker&&backgroundSync){
 		console.log("sending data to backgroundSync");
 		backgroundSync.postMessage({mode:1,movies:{items:movies.items,pagination:movies.pagination},timer:{command:'start'}});
 	}
+	console.groupEnd();   
 };
 
 function displayPagination() {
@@ -180,9 +186,16 @@ if(Worker&&backgroundSync){
 		if(event.data.update){
 			if(event.data.update.items){
 				console.log("updated movies.items");
-				movies.items=event.data.update.items;
+				if(event.data.update.items.length){
+					movies.items=[];
+					event.data.update.items.forEach(function(item,index){
+						var movie = new Movie(item);
+						movies.items.push(movie);
+					});
+				}
+				
 			}
-			if(event.data.update.items){
+			if(event.data.update.pagination){
 				console.log("updated movies.pagination");
 				movies.pagination=event.data.update.pagination;
 			}
@@ -221,7 +234,8 @@ function displaySubmitt(options={}){
 	console.groupEnd();
 }
 function displayNotification(options={}){
-	console.groupCollapsed('displayNotification');
+	console.groupCollapsed('displayNotification')
+	console.log("options=",options);
 	let title=options.title||"(unknown)";
 	let message=options.message||"(unknown)";
 	if(!(modalElements["submit"].modal.modal.dom.getAttribute("style")==null||modalElements["submit"].modal.modal.dom.getAttribute("style").includes("display: none"))){
@@ -247,7 +261,16 @@ function doAfterSuccessfulMovieEdit(options={}){
 
 function doAfterFailedMovieEdit(options={}){
 	console.groupCollapsed('doAfterFailedMovieEdit');
-	displayNotification(options.error);
-	displayMovies();
+	let message;
+	if(options.response.responseJSON&&options.response.responseJSON.message){
+		message=options.response.responseJSON.message;
+	}else
+	if(options.response.response&&options.response.response){
+		message=options.response.response;
+	}else
+	if(options.response&&options.response.respons){
+		message=options.response;
+	}
+	displayNotification({mode:"error",title:options.obj.movie.Title,message:message});
 	console.groupEnd();
 }
