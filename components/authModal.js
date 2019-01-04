@@ -161,7 +161,7 @@ class authModal {
 	}
 	addEvents(){
 		console.groupCollapsed('addEvents');
-		console.log('4Buttons');
+		console.groupCollapsed('4Buttons');
 		let me=this;
 		this.modal.modal.dom.querySelector('.bt-closenotification').addEventListener("click", function(event){
 			event.preventDefault();
@@ -481,11 +481,24 @@ class authModal {
 			.then(
 				function(resolve){
 					console.log('AuthRegister.userRegister response:resolve=',resolve);
-					me.doAfterSuccessResponse();
+					if(doAfterSuccessRegister){
+						console.log("trigger doAfterSuccessRegister");
+						doAfterSuccessRegister({obj:me,response:resolve});
+					}else{
+						console.log("use internal response");
+						me.doAfterSuccessResponse();
+					}
+					
 				},function(reject){
 					console.log('AuthRegister.userRegister response:reject=',reject);
 					reject.called="Register";
-					me.doAfterRejectedResponse(reject);
+					if(doAfterFailedRegister){
+						console.log("trigger doAfterFailed");
+						doAfterFailed({obj:me,response:reject});
+					}else{
+						console.log("use internal response");
+						me.doAfterRejectedResponse(reject);
+					}
 				}
 			);
 		}else{

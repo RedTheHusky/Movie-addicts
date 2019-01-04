@@ -16,85 +16,21 @@ function backgroundSyncLoad(){
 }
 function modalLoad(){
 	console.groupCollapsed('modalLoad');
-	modalElements["submit"]= new Modal({root:"modalRoot"});
+	
 	modalElements["notification"]= new Modal({root:"modalRoot"});
-	let content_head=`<button type="button" id="${modalElements["submit"].modal.id}_toggle" class="btn btn-primary" style="display:none" data-toggle="modal" data-target="#${modalElements["submit"].modal.id}"></button><div class="modalElements["submit"]-dialog">
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title" ></h4></div>`;
-	let content_body=`<div class="modal-body" ></div>`;
-    let content_footer=`<div class="modal-footer">
-          <button type="button" class="btn btn-default submit-close" data-dismiss="modal">Close</button>
-		  <button type="button" class="btn btn-default submit-save">Save</button>
-        </div>
-      </div>
-      
-    </div>`;
-	modalElements["submit"].content=content_head+content_body+content_footer;
+	modalElements["submit"]= new movieModal({root:"modalRoot"});
 	modalElements["notification"].addModal2Root();
 	modalElements["submit"].addModal2Root();
-	let btn_save=modalElements["submit"].modal.dom.querySelector(".submit-save");
-	if(btn_save){
-		btn_save.addEventListener("click", function(){
-			console.groupCollapsed('btn_save-click');
-			modalElements["submit"].hide();
-			if(modalElements["submit"].mode==="new"){
-				modalElements["submit"].movie=new Movie();
-				
-			}
-			modalElements["submit"].getElements("input").forEach(function(input,index){
-				console.groupCollapsed('input[',index,']');
-				let id=input.id;
-				console.log('id=',id);
-				console.log('value=',input.value);
-				let movieid=id.replace("new", "");
-				console.log('moviekey=',movieid);
-				console.log('old value=',modalElements["submit"].movie[movieid]);
-				modalElements["submit"].movie[movieid]=input.value;
-				console.log('new value=',modalElements["submit"].movie[movieid]);
-				console.groupEnd();
-			});
-			if(modalElements["submit"].mode==="edit"){
-				console.log('edit movie');
-				modalElements["submit"].movie.editMovie().then(
-					function(response) {
-					  console.log("Movie with id " + modalElements["submit"].movie._id + " was succesfully updated");
-					  displayNotification({mode:"supdated",title:modalElements["submit"].movie.Title,message:"Movie with id " + modalElements["submit"].movie._id + " was succesfully updated."});
-					  displayMovies();
-					},
-					function(reject){
-						console.error("Error updating movie");
-						let error={mode:"error",title:"editing movie"};
-						if(reject.responseJSON&&reject.responseJSON.message){
-							error.message=reject.responseJSON.message;
-						}else
-						if(reject.response){
-							error.message=reject.response;
-						}else
-						if(reject){
-							error.message=reject;
-						}
-						displayNotification(error);
-					}
-				);
-			}else
-			if(options.mode==="new"){
-				console.log('new movie');
-			}
-			
-			console.groupEnd();
-		});
-	}
 	modalElements["auth"]= new authModal({root:"modalRoot"});
 	modalElements["auth"].addModal2Root();
 	modalElements["auth"].add2Head();
 	modalElements["auth"].getURLDatas();
 	modalElements["auth"].displayLogIn();
+	modalElements["submit"].addEvents();
 	modalElements["auth"].addEvents();
 	
-	
+	//modalElements["submit"].modal.show();
+	//modalElements["submit"].displaySubmit();
 	console.groupEnd();
 }
 function getMovies(skip) {
@@ -202,7 +138,8 @@ function editMovie(movie){
 		function(response) {
 			console.log("success getMovie");
 			console.log("response=",response);
-			displaySubmitt({mode:"edit",response:response,movie:movie});
+			modalElements["submit"].displayEdit({response:response,movie:movie});
+			//displaySubmitt({mode:"edit",response:response,movie:movie});
 		}
 	);
 }
@@ -287,9 +224,9 @@ function displayNotification(options={}){
 	console.groupCollapsed('displayNotification');
 	let title=options.title||"(unknown)";
 	let message=options.message||"(unknown)";
-	if(!(modalElements["submit"].modal.dom.getAttribute("style")==null||modalElements["submit"].modal.dom.getAttribute("style").includes("display: none"))){
+	if(!(modalElements["submit"].modal.modal.dom.getAttribute("style")==null||modalElements["submit"].modal.modal.dom.getAttribute("style").includes("display: none"))){
 		console.warn("Display !=none, trying to change display.");
-		modalElements["submit"].hide();
+		modalElements["submit"].modal.hide();
 	}
 	modalElements["notification"].addModal2Root();
 	if(options.mode==="error"){
@@ -301,4 +238,16 @@ function displayNotification(options={}){
 	console.groupEnd();
 }
 
+function doAfterSuccessfulMovieEdit(options={}){
+	console.groupCollapsed('doAfterSuccessfulMovieEdit');
+	displayNotification({mode:"supdated",title:options.obj.movie.Title,message:"Movie with id " + options.obj.movie._id + " was succesfully updated."});
+	displayMovies();
+	console.groupEnd();
+}
 
+function doAfterFailedMovieEdit(options={}){
+	console.groupCollapsed('doAfterFailedMovieEdit');
+	displayNotification(options.error);
+	displayMovies();
+	console.groupEnd();
+}
