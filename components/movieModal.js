@@ -52,6 +52,7 @@ class movieModal {
 			<div class='details'>
 				
 			</div>
+			<input class='fileInput' type="file" accept=".jpg, .jpeg, .png, .gif">
 			<div class='notification' style="display:none">
 
 			</div>
@@ -71,63 +72,73 @@ class movieModal {
 	addEvents(){
 		console.groupCollapsed('addEvents');
 		if(this.modal.modal.dom.querySelector(".bt-save")){
+			console.log('bt-save.register');
 			let me=this;
 			this.modal.modal.dom.querySelector(".bt-save").addEventListener("click", function(){
-			console.groupCollapsed('btn_save-click');
-			me.modal.hide();
-			if(me.mode==="new"){
-				me.movie=new Movie();
-				
-			}
-			me.modal.getElements("input").forEach(function(input,index){
-				console.groupCollapsed('input[',index,']');
-				let id=input.id;
-				console.log('id=',id);
-				console.log('value=',input.value);
-				let movieid=id.replace("new", "");
-				console.log('moviekey=',movieid);
-				console.log('old value=',me.movie[movieid]);
-				modalElements["submit"].movie[movieid]=input.value;
-				console.log('new value=',me.movie[movieid]);
+				console.groupCollapsed('btn_save-click');
+				me.modal.hide();
+				if(me.mode==="new"){
+					me.movie=new Movie();
+					
+				}
+				me.modal.getElements("input").forEach(function(input,index){
+					console.groupCollapsed('input[',index,']');
+					let id=input.id;
+					console.log('id=',id);
+					console.log('value=',input.value);
+					let movieid=id.replace("new", "");
+					console.log('moviekey=',movieid);
+					console.log('old value=',me.movie[movieid]);
+					modalElements["submit"].movie[movieid]=input.value;
+					console.log('new value=',me.movie[movieid]);
+					console.groupEnd();
+				});
+				if(me.mode==="edit"){
+					console.log('edit movie');
+					me.movie.editMovie().then(
+						function(response) {
+							console.log("Movie with id " + me.movie._id + " was succesfully updated");
+							if(doAfterSuccessfulMovieEdit){
+								console.log("trigger doAfterSuccessfulMovieEdit");
+								doAfterSuccessfulMovieEdit({obj:me,response:response});
+							}
+						  //displayNotification({mode:"supdated",title:me.movie.Title,message:"Movie with id " + me.movie._id + " was succesfully updated."});
+						  //displayMovies();
+						},
+						function(reject){
+							console.error("Error updating movie");
+							let error={mode:"error",title:"editing movie"};
+							if(reject.responseJSON&&reject.responseJSON.message){
+								error.message=reject.responseJSON.message;
+							}else
+							if(reject.response){
+								error.message=reject.response;
+							}else
+							if(reject){
+								error.message=reject;
+							}
+							if(doAfterFailedMovieEdit){
+								console.log("trigger doAfterFailedMovieEdit");
+								doAfterFailedMovieEdit({obj:me,response:reject});
+							}
+							//displayNotification(error);
+						}
+					);
+				}else
+				if(options.mode==="new"){
+					console.log('new movie');
+				}
 				console.groupEnd();
 			});
-			if(me.mode==="edit"){
-				console.log('edit movie');
-				me.movie.editMovie().then(
-					function(response) {
-						console.log("Movie with id " + me.movie._id + " was succesfully updated");
-						if(doAfterSuccessfulMovieEdit){
-							console.log("trigger doAfterSuccessfulMovieEdit");
-							doAfterSuccessfulMovieEdit({obj:me,response:response});
-						}
-					  //displayNotification({mode:"supdated",title:me.movie.Title,message:"Movie with id " + me.movie._id + " was succesfully updated."});
-					  //displayMovies();
-					},
-					function(reject){
-						console.error("Error updating movie");
-						let error={mode:"error",title:"editing movie"};
-						if(reject.responseJSON&&reject.responseJSON.message){
-							error.message=reject.responseJSON.message;
-						}else
-						if(reject.response){
-							error.message=reject.response;
-						}else
-						if(reject){
-							error.message=reject;
-						}
-						if(doAfterFailedMovieEdit){
-							console.log("trigger doAfterFailedMovieEdit");
-							doAfterFailedMovieEdit({obj:me,response:reject});
-						}
-						//displayNotification(error);
-					}
-				);
-			}else
-			if(options.mode==="new"){
-				console.log('new movie');
-			}
-			console.groupEnd();
-		});
+		}
+		if(this.modal.modal.dom.querySelector(".fileInput")){
+			let me=this;
+			console.log('fileInput.register');
+			this.modal.modal.dom.querySelector(".fileInput").addEventListener("change", function(){
+				console.groupCollapsed('fileInput-click');
+					me.fileuppload_triggered(this,me);
+				}
+			);
 		}
 		console.groupEnd();
 	}
@@ -175,7 +186,56 @@ class movieModal {
 		}
 		content_body+="</spam>";
 		console.groupEnd();
-		this.modal.setElement([{selector:".modal-title", task:"inner", value:"Edit movie: "+response["Title"]||""},{selector:".modal-body", task:"inner", value:content_body}, "show"]);
+		this.modal.setElement([{selector:".modal-title", task:"inner", value:"Edit movie: "+response["Title"]||""},{selector:".details", task:"inner", value:content_body}, "show"]);
+	}
+	fileuppload_triggered(event,me) {
+		console.groupCollapsed('fileuppload_triggered');
+	  //console.log('fileuppload_triggered');
+		var isError = false;
+		//var $i = $( '#fileInput' ), 
+		//input = $i[0]; 
+		console.log('event=',event);
+		console.log('this=',this);
+		console.log('me=',me);
+		let input=me.modal.modal.dom.querySelector(".fileInput");
+		//var $i = $( '.fileInput' ), 
+		//input = $i[0]; 
+		console.log('input=',me);
+		if ( input.files && input.files[0] ) {
+			let file = input.files[0]; // The file
+			if ("path" in file) {
+			  //console.log("file_path: ",file.path);
+			}
+			if ("name" in file) {
+			  //console.log("file_name: ",file.name);
+			}
+			if ("size" in file) {
+			  //console.log("file_size: ",file.size);
+			}
+			
+			var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+			if (allowedExtensions.exec(file.name)) {
+			  //console.log("file_extensionbvalid: ", true);
+			} else {
+			  //console.log("file_extensionbvalid: ", false);
+			  isError = true;
+			  ImageStatus(true, -2, file.name, "");
+			}
+			if (!isError) {
+				var reader = new FileReader();
+				reader.onload = function(e) {
+				//console.log("file_src: ", e.target.result);
+				//ImageStatus(true, 1, file.name, e.target.result);
+				console.log('result=',e.target.result);
+			  };
+			  reader.readAsDataURL(file);
+			}
+		} else {
+			// Handle errors here
+			//console.log( "file not selected" );
+			isError = true;
+		}
+		console.groupEnd();
 	}
 	
 }

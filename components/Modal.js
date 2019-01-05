@@ -7,6 +7,7 @@
 class Modal {
 	constructor(options={}) {
 		console.groupCollapsed('constructor');
+		if(!(typeof options === 'object')){options={}};
 		function uuidv4() {
 		  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 			var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -43,11 +44,11 @@ class Modal {
 				this.root.jquery=$('#'+this.root.id); 
 			}
 			if(options.addModal2Root){
-				this.addModal2Root();
+				this.addModal2Root(options.addModal2Root);
 			}
 		}
 		if(options.add2Head){
-			this.add2Head(options);
+			this.add2Head(options.add2Head);
 		}
 		if(options.loadMode&&(options.loadMode==="n"||options.loadMode===0)){
 			console.log("not included in dom's heade");
@@ -63,6 +64,7 @@ class Modal {
 	add2Head(options={}){
 		//optionally dynamically adding the bootstrap files if not added to the head 
 		console.groupCollapsed('add2Head');
+		if(!(typeof options === 'object')){options={}};
 		let loadMode='a';
 		if(options.loadMode){
 			loadMode=options.loadMode;
@@ -126,6 +128,7 @@ class Modal {
 	addModal2Root(options={}) {
 		//generates and appends the modal html elements to the rootdoom
 		console.groupCollapsed('addModal2Root');
+		if(!(typeof options === 'object')){options={}};
 		if(options.root){
 			this.root.id = options.root;
 			if(this.root.id){
@@ -168,6 +171,7 @@ class Modal {
 	}
 	setElement(options=[]){
 		console.groupCollapsed('setElement');
+		if(!(typeof options === 'object')){options=[]};
 		if(!this.modal.dom){
 			console.warn('No modal to select');
 			console.groupEnd();
@@ -228,6 +232,7 @@ class Modal {
 	}
 	setElements(options=[]){
 		console.groupCollapsed('setElements');
+		if(!(typeof options === 'object')){options=[]};
 		if(!this.modal.dom){
 			console.warn('No modal to select');
 			console.groupEnd();
@@ -274,20 +279,21 @@ class Modal {
 		});
 		console.groupEnd();
 	}
-	checkifRead(options="a"){
+	checkifRead(option="a"){
 		console.groupCollapsed('checkifRead');
-		console.log("options",options);
-		if((options==="a"||options==="c")&&!this.loaded.css){
+		if(!(typeof option === 'string')){option="a"};
+		console.log("option=",option);
+		if((option==="a"||option==="c")&&!this.loaded.css){
 			console.warn("stylesheet not loaded");
 			console.groupEnd();
 			return false;
 		}
-		if((options==="a"||options==="s")&&!this.loaded.js){
+		if((option==="a"||option==="s")&&!this.loaded.js){
 			console.warn("script not loaded");
 			console.groupEnd();
 			return false;
 		}
-		if((options==="a"||options==="r")&&(!this.root.dom||!this.isElement(this.root.dom))){
+		if((option==="a"||option==="r")&&(!this.root.dom||!this.isElement(this.root.dom))){
 			console.warn("no root defined");
 			console.groupEnd();
 			return false;
@@ -303,6 +309,7 @@ class Modal {
 	}
 	toggle(option="toggle"){
 		console.groupCollapsed('toggle');
+		if(!(typeof option === 'string')){option="toggle"};
 		if(!this.checkifRead()){
 			console.warn("not ready");
 			console.groupEnd();
@@ -368,6 +375,7 @@ class Modal {
 	}
 	getElements(selector=""){
 		console.groupCollapsed('getElements');
+		if(!(typeof selector === 'string')){selector="toggle"};
 		if(!this.modal.dom){
 			console.warn("There is no master dom to do querySelectorAll!");
 			console.groupEnd();

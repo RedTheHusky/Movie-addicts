@@ -3,6 +3,7 @@
 class authModal {
 	constructor(options={}) {
 		console.groupCollapsed('constructor');
+		if(!(typeof options === 'object')){options={}};
 		function uuidv4() {
 		  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 			var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -23,8 +24,14 @@ class authModal {
 				this.root.jquery=$('#'+this.modal.id); 
 			}
 			if(options.addModal2Root){
-				this.addModal2Root();
+				this.addModal2Root(options.addModal2Root);
+				if(options.addEvents){
+					this.addEvents();
+				}
 			}
+		}
+		if(options.add2Head){
+			this.add2Head(options.add2Head);
 		}
 		this.profile.protocol=location.protocol;
 		console.log('profile.protocol=',this.profile.protocol);
@@ -33,6 +40,7 @@ class authModal {
 	}
 	add2Head(options={}){
 		console.groupCollapsed('add2Head');
+		if(!(typeof options === 'object')){options={}};
 		let script={};
 		script['recaptcha']=document.createElement("script");  
 		let me=this;
@@ -48,6 +56,7 @@ class authModal {
 	addModal2Root(options={}) {
 		//generates and appends the modal html elements to the rootdoom
 		console.groupCollapsed('addModal2Root');
+		if(!(typeof options === 'object')){options={}};
 		if(options.root){
 			this.root.id = options.root;
 			if(this.root.id){
@@ -69,16 +78,16 @@ class authModal {
 				<div class='form-group'>
 					<input type="text" name="username" placeholder='Username' value="" class="text-input form-control inputKeyupCheck">
 				</div>
-				<div class='form-group register-group'>
+				<div class='form-group register-group' style="display:none">
 					<input type="text" name="email" placeholder='Email' value="" class="text-input form-control register-input inputKeyupCheck">
 				</div>
 				<div class='form-group' style="display:block">
 					<input type="password" name="password" value="" placeholder='Password' class="text-input form-control inputKeyupCheck" style="display:inline; width:90%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline;"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="25" width="20"></button>
 				</div>
-				<div class='form-group register-group' >
+				<div class='form-group register-group' style="display:none">
 					<input type="password" name="inputConfirmPassword" value="" placeholder='Retype your Password' class="text-input form-control register-input inputKeyupCheck" >
 				</div>
-				<div class='form-group register-group' id="add_g-recaptcha_here_${this.id}">
+				<div class='form-group register-group' id="add_g-recaptcha_here_${this.id}" style="display:none">
 					
 				</div>
 			</div>
@@ -96,7 +105,9 @@ class authModal {
 
   </form></div>`;
 		this.modal.content=content;
-		this.modal.addModal2Root();
+		if(!options.addSkip){
+			this.modal.addModal2Root(options.modal);
+		}
 		console.groupEnd();
 	}
 	displayLogIn(){
@@ -441,11 +452,25 @@ class authModal {
 			.then(
 				function(resolve){
 					console.log('AuthRegister.userLogIn response:resolve=',resolve);
-					me.doAfterSuccessResponse();
+					if(typeof doAfterSuccessLogin !=="undefined"){
+						console.log("trigger doAfterSuccessLogin");
+						doAfterSuccessRegister({obj:me,response:resolve});
+					}else{
+						console.log("use internal response");
+						me.doAfterSuccessResponse();
+					}
+					
 				},function(reject){
 					console.log('AuthRegister.userLogIn response:reject=',reject);
-					reject.called="Log in";
-					me.doAfterRejectedResponse(reject);
+					if(typeof doAfterFailedLogin !=="undefined"){
+						console.log("trigger doAfterFailedLogin");
+						doAfterSuccessRegister({obj:me,response:resolve});
+					}else{
+						console.log("use internal response");
+						reject.called="Log in";
+						me.doAfterRejectedResponse(reject);
+					}
+					
 				}
 			)
 		}else{
@@ -468,7 +493,7 @@ class authModal {
 			.then(
 				function(resolve){
 					console.log('AuthRegister.userRegister response:resolve=',resolve);
-					if(doAfterSuccessRegister){
+					if(typeof doAfterSuccessRegister !=="undefined"){
 						console.log("trigger doAfterSuccessRegister");
 						doAfterSuccessRegister({obj:me,response:resolve});
 					}else{
@@ -479,7 +504,7 @@ class authModal {
 				},function(reject){
 					console.log('AuthRegister.userRegister response:reject=',reject);
 					reject.called="Register";
-					if(doAfterFailedRegister){
+					if(typeof doAfterFailedRegister !=="undefined"){
 						console.log("trigger doAfterFailed");
 						doAfterFailed({obj:me,response:reject});
 					}else{

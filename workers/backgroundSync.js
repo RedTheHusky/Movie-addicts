@@ -1,4 +1,6 @@
 /*Worker for background sync
+This will periodically check if movies database has changed 
+if it did change based from the information it gathered it will trigger the host tread to update its movies or movie display
 */
 let timerForCheckingModificationl={mcycle:60000,obj:'',mfire:60000, mcount:0}; //this is 900000 ms == 15 minutes
 let mode=0; //1-all 2-special

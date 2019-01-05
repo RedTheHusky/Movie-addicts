@@ -17,16 +17,16 @@ function backgroundSyncLoad(){
 function modalLoad(){
 	console.groupCollapsed('modalLoad');
 	
-	modalElements["notification"]= new Modal({root:"modalRoot"});
+	modalElements["notification"]= new Modal({root:"modalRoot",addModal2Root:true,});
 	modalElements["submit"]= new movieModal({root:"modalRoot"});
-	modalElements["notification"].addModal2Root();
+	//modalElements["notification"].addModal2Root();
 	modalElements["submit"].addModal2Root();
-	modalElements["auth"]= new authModal({root:"modalRoot"});
-	modalElements["auth"].addModal2Root();
-	modalElements["auth"].add2Head();
-	modalElements["auth"].displayLogIn();
+	modalElements["auth"]= new authModal({root:"modalRoot",addModal2Root:true,add2Head:true,addEvents:true});
+	//modalElements["auth"].addModal2Root();
+	//modalElements["auth"].add2Head();
+	//modalElements["auth"].displayLogIn();
 	modalElements["submit"].addEvents();
-	modalElements["auth"].addEvents();
+	//modalElements["auth"].addEvents();
 	
 	//modalElements["submit"].modal.show();
 	//modalElements["submit"].displaySubmit();
@@ -242,18 +242,13 @@ function displayNotification(options={}){
 		modalElements["submit"].modal.hide();
 	}
 	modalElements["notification"].addModal2Root();
-	if(options.mode==="error"){
-		modalElements["notification"].setElement([{selector:".modal-title", task:"inner", value:"Error at "+title+" process."},{selector:".modal-body", task:"inner", value:"<p>"+message+"</p>"}, "show"]);
-	}else
-	if(options.mode==="supdated"){
-		modalElements["notification"].setElement([{selector:".modal-title", task:"inner", value:"Movie "+title+" successfully updated."},{selector:".modal-body", task:"inner", value:"<p>"+message+"</p>"}, "show"]);
-	}
+	modalElements["notification"].setElement([{selector:".modal-title", task:"inner", value:title},{selector:".modal-body", task:"inner", value:message}, "show"]);
 	console.groupEnd();
 }
 
 function doAfterSuccessfulMovieEdit(options={}){
 	console.groupCollapsed('doAfterSuccessfulMovieEdit');
-	displayNotification({mode:"supdated",title:options.obj.movie.Title,message:"Movie with id " + options.obj.movie._id + " was succesfully updated."});
+	displayNotification({mode:"supdated",title:"Updated successfully",message:"<p>Movie '"+options.obj.movie.Title+"' (" + options.obj.movie._id + ") was successfully updated.</p>"});
 	displayMovies();
 	console.groupEnd();
 }
@@ -270,6 +265,6 @@ function doAfterFailedMovieEdit(options={}){
 	if(options.response&&options.response.respons){
 		message=options.response;
 	}
-	displayNotification({mode:"error",title:options.obj.movie.Title,message:message});
+	displayNotification({mode:"error",title:"Failed update",message:"<p>Error at updating movie '"+options.obj.movie.Title+"'(" + options.obj.movie._id + ").</p><p>"+message+"</p>"});
 	console.groupEnd();
 }
