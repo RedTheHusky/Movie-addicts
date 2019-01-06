@@ -1,44 +1,54 @@
 let movies = new Movies();
 
-let modalElements={};let backgroundSync;let imageUploader;extraLoad();
+let modalElements={};let alertElements={};let backgroundSync;let backgroundNotification;let imageUploader;extraLoad();
 
 getMovies();
-
 function extraLoad(){
 	console.groupCollapsed('extraLoad');
-	modalElements["notification"]= new Modal({root:"modalRoot",addModal2Root:true});
-	modalElements["submit"]= new movieModal({root:"modalRoot"});
-	modalElements["submit"].addModal2Root();
-	authModal.init({root:"modalRoot",addModal2Root:true,add2Head:true,addEvents:true});
-	modalElements["submit"].addEvents();
-	auth2Pages.init();
-	jokeSocialMediaCall.init({root:"modalRoot",addModal2Root:true,addEvents:true});
+	console.groupCollapsed('notification');
+		modalElements["notification"]= new Modal({root:"modalRoot",addModal2Root:true});
+		alertElements["notification"]= new Alert({root:"alertRoot",addModal2Root:true});
+		jokeSocialMediaCall.init({root:"modalRoot",addModal2Root:true,addEvents:true});
+		googleCalendarRender.init({root:"modalRoot",addModal2Root:true,add2Head:true});
+	console.groupEnd();
+	console.groupCollapsed('auth');
+		authModal.init({root:"modalRoot",addModal2Root:true,add2Head:true,addEvents:true});
+		authAlert=new Alert({root:"alertRoot",addAlert2Root:true});
+		auth2Pages.init();
+	console.groupEnd();
+	console.groupCollapsed('submit');
+		modalElements["submit"]= new movieModal({root:"modalRoot"});
+		modalElements["submit"].addModal2Root();
+		modalElements["submit"].addEvents();
+	console.groupEnd();
 	console.groupCollapsed('backgroundSyncLoad');
-	if(Worker){
-		if(location.protocol==="file:"||location.protocol==="file"){
-			console.warn('cannot do worker do to invalid protocol');
-			console.groupEnd();
-			return;
+		if(Worker){
+			if(location.protocol==="file:"||location.protocol==="file"){
+				console.warn('cannot do worker do to invalid protocol');
+				console.groupEnd();
+				return;
+			}
+			backgroundSync = new Worker('../workers/backgroundSync.js');
+			backgroundNotification = new Worker('../workers/backgroundNotification.js');
+			console.log('backgroundSync loaded');
+		}else{
+			console.warn('backgroundSync not loaded');
 		}
-		backgroundSync = new Worker('../workers/backgroundSync.js');
-		console.log('backgroundSync loaded');
-	}else{
-		console.warn('backgroundSync not loaded');
-	}
+		
 	console.groupEnd();
 	console.groupCollapsed('imageUploaderLoad');
-	imageFileUploader.init();
-	if(document.querySelectorAll(".fileInput")){
-		document.querySelectorAll(".fileInput").forEach(function(element,i){
-			element.addEventListener("change", function(){
-				console.groupCollapsed('ileInput[',i,']');
-				imageFileUploader.fileUppload({event:event,element:element});
-				console.groupEnd();
+		imageFileUploader.init();
+		if(document.querySelectorAll(".fileInput")){
+			document.querySelectorAll(".fileInput").forEach(function(element,i){
+				element.addEventListener("change", function(){
+					console.groupCollapsed('ileInput[',i,']');
+					imageFileUploader.fileUppload({event:event,element:element});
+					console.groupEnd();
+				});
 			});
-		});
-	}
-	
+		}
 	console.groupEnd();
+	//googleCalendarRender.showModal();
 	console.groupEnd();
 }
 function getMovies(skip) {
@@ -129,6 +139,7 @@ function displayMovies() {
 	console.groupEnd();   
 };
 
+
 function displayPagination() {
   var templatePages = document.getElementById("pagination-template");
   var pagesContainer = document.getElementById("pagination");
@@ -211,6 +222,10 @@ if(Worker&&backgroundSync){
 		if(event.data.display){
 			console.log("do display");
 			displayMovies();
+			if(backgroundNotification){
+				console.log("sending data to backgroundNotification");
+				backgroundNotification.postMessage({notification:{body:"Updated displayed movies."}});
+			}
 		}
 	console.groupEnd();   
 	}
@@ -286,13 +301,9 @@ function doAfterSuccessConvertingImage2Base64(data={}){
 	console.groupEnd();
 }
 
-/*function doAfterSuccessLogin(data={}){
+function doAfterSuccessLogin(data={}){
 	console.groupCollapsed('doAfterSuccessLogin');
 	//location.reload();	
-	console.groupEnd();
-}
-function doAfterFailedLogin(data={}){
-	console.groupCollapsed('doAfterFailedLogin');	
 	console.groupEnd();
 }
 function doAfterSuccessRegister(data={}){
@@ -300,10 +311,11 @@ function doAfterSuccessRegister(data={}){
 	//location.reload();	
 	console.groupEnd();
 }
-function doAfterFailedRegister(data={}){
-	console.groupCollapsed('doAfterFailedRegister');	
+function doAfterSuccessLogOut(data={}){
+	console.groupCollapsed('doAfterSuccessLogOut');	
+	//location.reload();
 	console.groupEnd();
-}*/
+}
 
 function doAfterSuccessImageUpload(data={}){
 	console.groupCollapsed('doAfterSuccessImageUpload');
@@ -313,10 +325,24 @@ function doAfterSuccessImageUpload(data={}){
 		console.log('obj=',obj);
 		console.log('address=',obj.address);
 		modalElements["submit"].modal.modal.dom.querySelector('#newPoster').value=obj.address;
+		if(Worker&&backgroundNotification){
+			console.log("sending data to backgroundNotification");
+			backgroundNotification.postMessage({notification:{body:"Image success uploaded",icon:obj.address}});
+		}
 	}else{
 		console.log('address=',data.response.address);
 		modalElements["submit"].modal.modal.dom.querySelector('#newPoster').value=data.response.address;
+		if(Worker&&backgroundNotification){
+			console.log("sending data to backgroundNotification");
+			backgroundNotification.postMessage({notification:{body:"Image success uploaded",icon:data.response.address}});
+		}
 	}
 	
+	
 	console.groupEnd();
+}
+
+if(Worker&&backgroundNotification){
+	console.log("sending data to backgroundNotification");
+	backgroundNotification.postMessage({notification:{body:"Hi!"}});
 }

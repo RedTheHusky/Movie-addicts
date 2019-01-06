@@ -1,4 +1,6 @@
-const auth2Pages={ 
+
+let authAlert;
+let auth2Pages={ 
 	init:function(){
 		console.groupCollapsed('init');
 		this.addEvent();
@@ -9,6 +11,7 @@ const auth2Pages={
 		console.groupCollapsed('addEvent');
 		if(document.querySelector("#btnUserAuth")){
 			console.log('add button event');
+			let me=this;
 			document.querySelector("#btnUserAuth").addEventListener("click",function(event){
 				event.preventDefault();
 				console.groupCollapsed('btnUserAuth:click');
@@ -21,6 +24,11 @@ const auth2Pages={
 							if(typeof doAfterSuccessLogOut !=="undefined"){
 								console.log("trigger doAfterSuccessLogOut");
 								try {
+									authAlert.addAlert2Root();
+									authAlert.setType('success');
+									me.display();
+									authAlert.setElement([{selector:".alert-body",task:"inner",value:"Successfully loged out."},"show"]);
+									authAlert.slideup();
 									doAfterSuccessLogOut({response:resolve});
 								}
 								catch(err) {
@@ -36,6 +44,10 @@ const auth2Pages={
 							if(typeof doAfterFailedLogOut !=="undefined"){
 								console.log("trigger doAfterSuccessLogOut");
 								try {
+									authAlert.addAlert2Root();
+									authAlert.setType('danger');
+									authAlert.setElement([{selector:".alert-body",task:"inner",value:"Failed to log out."},"show"]);
+									authAlert.slideup();
 									doAfterFailedLogOut({response:reject});
 								}
 								catch(err) {
@@ -83,7 +95,7 @@ const auth2Pages={
 
 //component based on the idea of Modules 
 //need to replace this with Modules and not Models but can't figure out why import is not working 
-const authModal={
+let authModal={
 	init:function(options={}) {
 		console.groupCollapsed('init');
 		if(!(typeof options === 'object')){options={}};
@@ -158,16 +170,16 @@ const authModal={
       <div class="modal-body">
 			<div class='loginOrRegister'>
 				<div class='form-group'>
-					<input type="text" name="username" placeholder='Username' value="" class="text-input form-control inputKeyupCheck">
+					<input type="text" name="username" placeholder='Username' value="" autocomplete="username" class="text-input form-control inputKeyupCheck">
 				</div>
 				<div class='form-group register-group' style="display:none">
-					<input type="text" name="email" placeholder='Email' value="" class="text-input form-control register-input inputKeyupCheck">
+					<input type="text" name="email" placeholder='Email' value="" autocomplete="email" class="text-input form-control register-input inputKeyupCheck">
 				</div>
 				<div class='form-group' style="display:block">
-					<input type="password" name="password" value="" placeholder='Password' class="text-input form-control inputKeyupCheck" style="display:inline; width:90%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline;"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="20" width="20"></button>
+					<input type="password" name="password" value="" autocomplete="password" placeholder='Password' class="text-input form-control inputKeyupCheck" style="display:inline; width:90%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline;"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="20" width="20"></button>
 				</div>
 				<div class='form-group register-group' style="display:none">
-					<input type="password" name="inputConfirmPassword" value="" placeholder='Retype your Password' class="text-input form-control register-input inputKeyupCheck" >
+					<input type="password" name="inputConfirmPassword" autocomplete="new-password" value="" placeholder='Retype your Password' class="text-input form-control register-input inputKeyupCheck" >
 				</div>
 				<div class='form-group register-group' id="add_g-recaptcha_here_${this.id}" style="display:none">
 					
@@ -554,6 +566,11 @@ const authModal={
 					if(typeof doAfterSuccessLogin !=="undefined"){
 						console.log("trigger doAfterSuccessLogin");
 						try {
+							authAlert.addAlert2Root();
+							authAlert.setType('success');
+							auth2Pages.display();
+							authAlert.setElement([{selector:".alert-body",task:"inner",value:"Successfully loged in."},"show"]);
+							authAlert.slideup();
 							doAfterSuccessRegister({obj:me,response:resolve});
 						}
 						catch(err) {
@@ -572,6 +589,8 @@ const authModal={
 						me.close();
 						console.log("trigger doAfterFailedLogin");
 						try {
+							//authAlert.setType('danger');
+							//authAlert.setElement([{selector:".alert-body",task:"inner",value:"Failed to log in."},"show"]);
 							doAfterFailedLogin({obj:me,response:reject});
 						}
 						catch(err) {
@@ -610,6 +629,11 @@ const authModal={
 					if(typeof doAfterSuccessRegister !=="undefined"){
 						console.log("trigger doAfterSuccessRegister");
 						try {
+							authAlert.addAlert2Root();
+							authAlert.setType('success');
+							auth2Pages.display();
+							authAlert.setElement([{selector:".alert-body",task:"inner",value:"Successfully registered."},"show"]);
+							authAlert.slideup();
 							doAfterSuccessRegister({obj:me,response:resolve});
 						}
 						catch(err) {
@@ -629,6 +653,8 @@ const authModal={
 						console.log("trigger doAfterFailed");
 						me.close();
 						try {
+							//authAlert.setType('danger');
+							//authAlert.setElement([{selector:".alert-body",task:"inner",value:"Failed to registered."},"show"]);
 							doAfterFailedRegister({obj:me,response:reject});
 						}
 						catch(err) {
@@ -696,3 +722,4 @@ const authModal={
 		console.groupEnd();
 	}
 }
+

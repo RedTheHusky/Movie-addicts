@@ -1,4 +1,4 @@
-const jokeSocialMediaCall={
+let jokeSocialMediaCall={
 	init:function(options={}) {
 		console.groupCollapsed('init');
 		this.modal="";

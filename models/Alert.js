@@ -4,7 +4,7 @@
 //allows multiple modal to exist on the same page just by creating a new instant of the class as each modal gets its own unique id
 //the setElement. setElements, setContent only affects the dom elements of the instant class that its called from
 
-class Modal {
+class Alert {
 	constructor(options={}) {
 		console.groupCollapsed('constructor');
 		if(!(typeof options === 'object')){options={}};
@@ -16,26 +16,10 @@ class Modal {
 		}
 		this.root={id:'',dom:'',jquery:''};
 		this.modal={id:'',dom:'',jquery:''};
-		this.modal.id="modal_"+uuidv4();
+		this.modal.id="alert_"+uuidv4();
 		this.loaded={css:true,js:true};
-		this.content=`<button type="button" id="${this.modal.id}_toggle" class="btn btn-primary" style="display:none" data-toggle="modal" data-target="#${this.modal.id}"></button>
-		<div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title" >Modal Header</h4>
-        </div>
-        <div class="modal-body" >
-          <p>Some text in the modal.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      
-    </div>`;
+		this.content=`<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+		<div class="alert-body">Some text</div>`;
 		console.log('options=',options);
 		if(options.root){
 			this.root.id = options.root;
@@ -44,7 +28,7 @@ class Modal {
 				this.root.jquery=$('#'+this.root.id); 
 			}
 			if(options.addModal2Root){
-				this.addModal2Root(options.addModal2Root);
+				this.addAlert2Root(options.addModal2Root);
 			}
 		}
 		if(options.add2Head){
@@ -125,7 +109,7 @@ class Modal {
 		}
 		console.groupEnd();
 	}
-	addModal2Root(options={}) {
+	addAlert2Root(options={}) {
 		//generates and appends the modal html elements to the rootdoom
 		console.groupCollapsed('addModal2Root');
 		if(!(typeof options === 'object')){options={}};
@@ -146,12 +130,15 @@ class Modal {
 		if(this.root.dom&&this.isElement(this.root.dom)){
 			console.log('Dom element does exists');
 			this.modal.dom = document.createElement("div");
-			this.modal.dom.classList.add("modal");this.modal.dom.classList.add("fade");
+			this.modal.dom.classList.add("alert");this.modal.dom.classList.add("alert-info");this.modal.dom.classList.add("fade");this.modal.dom.classList.add("in");
+			//this.modal.dom.classList.add("alert-dismissible");
 			this.modal.dom.setAttribute("id", this.modal.id);
-			this.modal.dom.setAttribute("role", "dialog");
+			this.modal.dom.setAttribute("role", "alert");
+			this.modal.dom.setAttribute("style", "display:none");
 			this.modal.dom.innerHTML = this.content;
 			this.root.dom.appendChild(this.modal.dom);	
 			this.modal.jquery=$('#'+this.modal.id); 
+			this.alertType="info";
 			console.log('dom=',this.modal.dom);
 			console.log('jquery=',this.modal.jquery);
 		}else{
@@ -258,36 +245,62 @@ class Modal {
 		console.groupEnd();
 		return true;
 	}
-	toggle(option="toggle"){
-		console.groupCollapsed('toggle');
-		if(!(typeof option === 'string')){option="toggle"};
-		if(!this.checkifRead()){
-			console.warn("not ready");
-			console.groupEnd();
-			return;
-		}
-		console.log('option=',option);
-		if(option!="toggle"&&option!="show"&&option!="hide"){
-			console.warn("not a valid option");
-			console.groupEnd();
-			return;
-		}
-		//multiple methods to support multiple condition of being called toggle/show/hide
-		if(this.modal.jquery&&this.modal.jquery.modal){
-			console.log('method 1');
-			this.modal.jquery.modal(option);
-		}else{
-			console.warn("No way to toggle it!");
-		}
-	}
-	show(){
+	show(options=""){
 		console.groupCollapsed('show');
-		this.toggle('show');
+		this.modal.jquery.show(options);
 		console.groupEnd();
 	}
 	hide(){
 		console.groupCollapsed('hide');
-		this.toggle('hide');
+		this.modal.jquery.hide();
+		console.groupEnd();
+	}
+	setType(option){
+		console.groupCollapsed('setType');
+		console.log('option=',option);
+		this.alertType=option;
+		//let typeList=["alert-primary", "alert-secondary", "alert-success","alert-danger","alert-warning","alert-info","alert-light","alert-dark"];
+		let removeList=[];
+		let addClass="";
+		if(option==="primary"||option===1){
+			removeList=[ "alert-secondary", "alert-success","alert-danger","alert-warning","alert-info","alert-light","alert-dark"];
+			addClass="alert-primary";
+		}else
+		if(option==="secondary"||option===2){
+			removeList=["alert-primary","alert-success","alert-danger","alert-warning","alert-info","alert-light","alert-dark"];
+			addClass="alert-secondary";
+		}else
+		if(option==="success"||option===3){
+			removeList=["alert-primary", "alert-secondary","alert-danger","alert-warning","alert-info","alert-light","alert-dark"];
+			addClass="alert-success";
+		}else
+		if(option==="danger"||option===4){
+			removeList=["alert-primary", "alert-secondary", "alert-success","alert-warning","alert-info","alert-light","alert-dark"];
+			addClass="alert-danger";
+		}else
+		if(option==="warning"||option===5){
+			removeList=["alert-primary", "alert-secondary", "alert-success","alert-danger","alert-info","alert-light","alert-dark"];
+			addClass="alert-warning";
+		}else
+		if(option==="info"||option===6){
+			removeList=["alert-primary", "alert-secondary", "alert-success","alert-danger","alert-warning","alert-light","alert-dark"];
+			addClass="alert-info";
+		}else
+		if(option==="light"||option===7){
+			removeList=["alert-primary", "alert-secondary", "alert-success","alert-danger","alert-warning","alert-info","alert-dark"];
+			addClass="alert-light";
+		}else
+		if(option==="dark"||option===8){
+			removeList=["alert-primary", "alert-secondary", "alert-success","alert-danger","alert-warning","alert-info","alert-light"];
+			addClass="alert-dark";
+		}else{
+			removeList=["alert-primary", "alert-secondary", "alert-success","alert-danger","alert-warning","alert-info","alert-light","alert-dark"];
+		}
+		let me=this;
+		console.log('removeList=',removeList);
+		console.log('addClass=',addClass);
+		removeList.forEach(function(c,i){me.modal.dom.classList.remove(c)});
+		if(addClass)this.modal.dom.classList.add(addClass);
 		console.groupEnd();
 	}
 	isElement(o){
@@ -302,17 +315,18 @@ class Modal {
 		console.groupEnd();
 		return r;
 	}
-	getElements(selector=""){
-		console.groupCollapsed('getElements');
-		if(!(typeof selector === 'string')){selector="toggle"};
-		if(!this.modal.dom){
-			console.warn("There is no master dom to do querySelectorAll!");
-			console.groupEnd();
-			return [];
+	slideup(options={a:2000,b:500,c:500,d:500}){
+		console.groupCollapsed('slideup');
+		console.log("options=",options);
+		let me=this;
+		try {
+		  this.modal.jquery.fadeTo(options.a, options.b).slideUp(options.c, function(){
+				me.modal.jquery.slideUp(options.d);
+			});
 		}
-		let elements=this.modal.dom.querySelectorAll(selector);
-		console.log('elements=',elements);
+		catch(err) {
+		  console.warn("err=",err);
+		}
 		console.groupEnd();
-		return elements;
 	}
 }

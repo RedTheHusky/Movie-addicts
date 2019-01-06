@@ -1,4 +1,4 @@
-const imageFileUploader={
+let imageFileUploader={
 	init:function(options={}) {
 		console.groupCollapsed('constructor');
 		this.file="";
