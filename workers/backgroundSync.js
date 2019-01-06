@@ -18,103 +18,103 @@ let stats={
 //stats.xhttp.calls stats.xhttp.success stats.xhttp.failure
 //stats.checkup.up2Date stats.checkup.modified
 self.onmessage = function (msg) {
-    console.groupCollapsed('onmessage');
-	console.log("msg=",msg);
+    //console.groupCollapsed('onmessage');
+	//console.log("msg=",msg);
 		stats.received++;
 		/*if(msg.data.importScript){
-			console.log('we got importScript');
-			console.log("value=",msg.data.importScript);
+			//console.log('we got importScript');
+			//console.log("value=",msg.data.importScript);
 			importScripts(msg.data.importScript);
 		}else*/
 		if(msg.data.mode){
-			console.log('we got mode');
+			//console.log('we got mode');
 			stats.called.mode++;
 			mode=msg.data.mode;
-			console.log("value=",mode);
+			//console.log("value=",mode);
 			buildUrlMovies();
 		}
 		//movies
 		if(msg.data.movies){
 			if(msg.data.movies.reset){
-				console.log('we got movies.reset');
+				//console.log('we got movies.reset');
 				stats.called.movies.reset++;
 				movies={main:{items:[],pagination:{}},background:{items:[],pagination:{}}, settings:{skip:0,take:10,searchParam:'',category:''}};
 			}
 			if(msg.data.movies.items){
-				console.log('we got movies_items');
+				//console.log('we got movies_items');
 				stats.called.movies.items++;
 				movies.main.items=msg.data.movies.items;
-				console.log("value=",movies.main.items);
+				console.log("items=",movies.main.items);
 			}
 			if(msg.data.movies.pagination){
-				console.log('we got movies_pagination');
+				//console.log('we got movies_pagination');
 				stats.called.movies.pagination++;
 				movies.main.pagination=msg.data.movies.pagination;
-				console.log("value=",movies.main.pagination);
+				console.log("pagination=",movies.main.pagination);
 			}
 			if(msg.data.movies.skip){
-				console.log('we got movies_skip');
+				//console.log('we got movies_skip');
 				stats.called.movies.skip++;
 				movies.settings.skip=msg.data.movies.skip;
-				console.log("value=",movies.settings.skip);
+				//console.log("value=",movies.settings.skip);
 				buildUrlMovies();
 			}
 			if(msg.data.movies.searchparam){
-				console.log('we got movies_searchparam');
+				//console.log('we got movies_searchparam');
 				stats.called.movies.searchparam++;
 				movies.settings.searchParam=msg.data.movies.searchparam;
-				console.log("value=",movies.settings.searchParam);
+				//console.log("value=",movies.settings.searchParam);
 				buildUrlMovies();
 			}
 			if(msg.data.movies.category){
-				console.log('we got movies_category');
+				//console.log('we got movies_category');
 				stats.called.movies.category++;
 				movies.settings.category=msg.data.movies.category;
-				console.log("value=",movies.settings.category);
+				//console.log("value=",movies.settings.category);
 				buildUrlMovies();
 			}
 		}
 		if(msg.data.movie){
 			if(msg.data.movie.details){
-				console.log('we got movie_details');
+				//console.log('we got movie_details');
 				stats.called.movie.details++
 				movie.main=msg.data.movie.details;
-				console.log("value=",movies.main);
+				//console.log("value=",movies.main);
 				buildUrlMovies();
 			}
 			if(msg.data.movie.id){
-				console.log('we got movie_id');
+				//console.log('we got movie_id');
 				stats.called.movie.id++
 				movie.id=msg.data.movie.id;
-				console.log("value=",movies.id);
+				//console.log("value=",movies.id);
 				buildUrlMovies();
 			}
 		}
 		//timer
 		if(msg.data.timer){
-			console.log('we got timer4Check');
-			console.log("value=",msg.data.timer4Check);
+			//console.log('we got timer4Check');
+			//console.log("value=",msg.data.timer4Check);
 			if(msg.data.timer.command==="start"){
-				console.log('we got timer4Start');
+				//console.log('we got timer4Start');
 				stats.called.timer.start++;
 				startTimerInterval();
 			}else
 			if(msg.data.timer.command==="stop"){
-				console.log('we got timer4Stop');
+				//console.log('we got timer4Stop');
 				stats.called.timer.stop++;
 				stopTimerInterval();
 			}
 			if(msg.data.timer.mcycle){
-				console.log('we got timer4Mcycle');
+				//console.log('we got timer4Mcycle');
 				stats.called.timer.mcycle++;
-				console.log("value=",msg.data.timer.mcycle);
+				//console.log("value=",msg.data.timer.mcycle);
 				stats.called.timer4Check++;
 				timerForCheckingModificationl.mcycle=msg.data.timer.mcycle;
 			}
 			if(msg.data.timer.mfire){
-				console.log('we got timer4Mfire');
+				//console.log('we got timer4Mfire');
 				stats.called.timer.mfire++;
-				console.log("value=",msg.data.timer.mfire);
+				//console.log("value=",msg.data.timer.mfire);
 				stats.called.timer4Check++;
 				timerForCheckingModificationl.mfire=msg.data.timer.mfire;
 			}
@@ -122,8 +122,8 @@ self.onmessage = function (msg) {
 		
 		//get
 		if(msg.data.get){
-			console.log('we got get');
-			console.log("value=",msg.data.get);
+			//console.log('we got get');
+			//console.log("value=",msg.data.get);
 			if(msg.data.get==="stats"){
 				let tmp={};
 				function addMain(key){
@@ -134,43 +134,43 @@ self.onmessage = function (msg) {
 				reply({stats:tmp,timer:timerForCheckingModificationl,movies:movies,movie:movie});
 			}
 		}
-	console.groupEnd();   
+	//console.groupEnd();   
 }
 
 function startTimerInterval(){
-	console.groupCollapsed('startTimerInterval');
+	//console.groupCollapsed('startTimerInterval');
 	if(timerForCheckingModificationl['obj']){
-		console.log('removing old');
+		//console.log('removing old');
 		clearInterval(timerForCheckingModificationl['obj']);
 		timerForCheckingModificationl['obj']='';
 	}
 	if(mode!=1&&mode!=2){
 		console.warn('No mode selected. Ignoring setIterval');
-		console.groupEnd();
+		//console.groupEnd();
 		return;
 	}
 	if(location.protocol==="file:"){
 		console.warn('Protocol is invalid. Ignoring setIterval');
-		console.groupEnd();
+		//console.groupEnd();
 		return;
 	}
-	console.log('adding new');
+	//console.log('adding new');
 	timerForCheckingModificationl.mcount=0;
 	timerForCheckingModificationl['obj']=setInterval(doAjaxCheckup, timerForCheckingModificationl['mcycle']);
-	console.groupEnd();
+	//console.groupEnd();
 }
 function stopTimerInterval(){
-	console.groupCollapsed('stopTimerInterval');
+	//console.groupCollapsed('stopTimerInterval');
 	if(timerForCheckingModificationl['obj']){
-		console.log('removing ');
+		//console.log('removing ');
 		clearInterval(timerForCheckingModificationl['obj']);
 		timerForCheckingModificationl['obj']='';
 	}
-	console.groupEnd();
+	//console.groupEnd();
 }
 function buildUrlMovies(){
-	console.groupCollapsed('buildUrlMovies');
-	console.log('mode=',mode);
+	//console.groupCollapsed('buildUrlMovies');
+	//console.log('mode=',mode);
 	if(mode===1){
 		if (!movies.settings.category || !movies.settings.searchParam) {
 			urlMovies = movieUrl + `?take=${movies.settings.take}&skip=${movies.settings.skip}`;
@@ -182,30 +182,30 @@ function buildUrlMovies(){
 		urlMovies = movieUrl +"/"+movie.id;
 	}
 	
-	console.log('urlMovies=',urlMovies)
-	console.groupEnd();
+	//console.log('urlMovies=',urlMovies)
+	//console.groupEnd();
 }
 function doAjaxCheckup(){
-	console.groupCollapsed('doAjaxCheckup');
+	console.log("checking4Modifications");
+	//console.groupCollapsed('doAjaxCheckup');
 	timerForCheckingModificationl.mcount+=timerForCheckingModificationl.mcycle;
 	if(timerForCheckingModificationl.mcount<timerForCheckingModificationl.mfire){
-		console.log('waiting:',timerForCheckingModificationl.mcount,'/',timerForCheckingModificationl.mfire);
-		console.groupEnd();
+		//console.log('waiting:',timerForCheckingModificationl.mcount,'/',timerForCheckingModificationl.mfire);
+		//console.groupEnd();
 		return;
 	}
 	timerForCheckingModificationl.mcount=0;
-	console.log('urlMovies=',urlMovies);
+	//console.log('urlMovies=',urlMovies);
 	if(urlMovies===''){
 		buildUrlMovies();
-		console.log('urlMovies=',urlMovies);
+		//console.log('urlMovies=',urlMovies);
 	}
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-			//console.log("response=",xhttp.responseText);
 			stats.xhttp.success++;
 			var obj = JSON.parse(xhttp.responseText);
-			console.log("response=",obj);
+			//console.log("response=",obj);
 			createCatche(obj);
 			if(!checkifTheyAreTheSame()){
 				if(mode===1){
@@ -228,19 +228,19 @@ function doAjaxCheckup(){
 	xhttp.open("GET",urlMovies, true);
 	stats.xhttp.calls++;
 	xhttp.send();
-	console.groupEnd();
+	//console.groupEnd();
 }
 function createCatche(obj){
-	console.groupCollapsed('createCatche');
-	console.log("obj=",obj);
+	//console.groupCollapsed('createCatche');
+	//console.log("obj=",obj);
 	if(mode===1){
 		let results=obj.results;
-		console.log("pagination=",obj.pagination);
-		console.log("results=",results);
+		//console.log("pagination=",obj.pagination);
+		//console.log("results=",results);
 		movies.background.pagination=obj.pagination;
 		movies.background.items=[];
 		results.forEach(function(one,index){//element, index
-			console.log("[",index,"]=",one);
+			//console.log("[",index,"]=",one);
 			let movie={};
 			movie._id = one._id;
 			movie.Title = one.Title;
@@ -258,8 +258,8 @@ function createCatche(obj){
 			movies.background.items.push(movie);
 		});
 		
-		console.log("result.items=",movies.background.items);
-		console.log("result.pagination=",movies.background.pagination);
+		//console.log("result.items=",movies.background.items);
+		//console.log("result.pagination=",movies.background.pagination);
 	}
 	if(mode===2){
 		movie.background._id = obj._id;
@@ -275,107 +275,111 @@ function createCatche(obj){
 		movie.background.Country = obj.Country;
 		movie.background.Poster = obj.Poster;
 		movie.background.imdbRating = obj.imdbRating;
-		console.log("result.movie=",movie.background);
+		//console.log("result.movie=",movie.background);
 	}
 	
-	console.groupEnd();
+	//console.groupEnd();
 }
 function checkifTheyAreTheSame(){
-	console.groupCollapsed('checkifTheyAreTheSame');
+	//console.groupCollapsed('checkifTheyAreTheSame');
 	function isObjEquivalent(a, b) {
-		console.groupCollapsed('isObjEquivalent');
+		//console.groupCollapsed('isObjEquivalent');
 		var aProps = Object.getOwnPropertyNames(a);
 		var bProps = Object.getOwnPropertyNames(b);
 		if (aProps.length != bProps.length) {
-			console.groupCollapsed('invalud lenght');
-			console.log('aProps.length=',aProps.length);
-			console.log('bProps.length=',bProps.length);
-			console.groupEnd();
-			console.groupEnd();
+			console.warn("notEquivalent->invalud lenght");
+			//console.groupCollapsed('invalud lenght');
+			//console.log('aProps.length=',aProps.length);
+			//console.log('bProps.length=',bProps.length);
+			//console.groupEnd();
+			//console.groupEnd();
 			return false;
 		}
 
 		for (var i = 0; i < aProps.length; i++) {
 			var propName = aProps[i];
 			if (a[propName] != b[propName]) {
-				console.groupCollapsed('invalud property');
-				console.log('Props.propName=',propName);
-				console.log('aProps.value=',a[propName]);
-				console.log('bProps.value=',b[propName]);
-				console.groupEnd();
-				console.groupEnd();
+				console.warn("notEquivalent->",[propName,a[propName],b[propName]]);
+				//console.groupCollapsed('invalud property');
+				//console.log('Props.propName=',propName);
+				//console.log('aProps.value=',a[propName]);
+				//console.log('bProps.value=',b[propName]);
+				//console.groupEnd();
+				//console.groupEnd();
 				return false;
 			}
 		}
-		console.groupEnd();
+		//console.groupEnd();
 		return true;
 	}
 	
 	if(mode===1){
-		console.log("movies.main.items=",movies.main.items);
-		console.log("movies.background.items=",movies.background.items);
-		console.log("movies.main.items.length=",movies.main.items.length);
-		console.log("movies.background.items.length=",movies.background.items.length);
+		//console.log("movies.main.items=",movies.main.items);
+		//console.log("movies.background.items=",movies.background.items);
+		//console.log("movies.main.items.length=",movies.main.items.length);
+		//console.log("movies.background.items.length=",movies.background.items.length);
 		if(movies.main.items.length!=movies.background.items.length){
-			console.log("array lenght invalid");
-			console.log("result=false");
+			console.warn("array lenght invalid");
+			//console.log("result=false");
 			stats.checkup.modified++;
-			console.groupEnd();
+			//console.groupEnd();
 			return false;
 		}else{
 			let ok=true;
 			let i=0;
 			while(i<movies.main.items.length&&ok){
-				console.groupCollapsed('['+i+']');
-				console.log("movies.main.items=",movies.main.items[i]);
-				console.log("movies.background.items=",movies.background.items[i]);
+				//console.groupCollapsed('['+i+']');
+				//console.log("movies.main.items=",movies.main.items[i]);
+				//console.log("movies.background.items=",movies.background.items[i]);
 				if(isObjEquivalent(movies.main.items[i],movies.background.items[i])){
-					console.log("isObjEquivalent=true");
+					//console.log("isObjEquivalent=true");
 				}else{
-					console.log("isObjEquivalent=false");
+					//console.log("isObjEquivalent=false");
+					console.warn("notEquivalent:",[movies.main.items[i],movies.background.items[i]]);
 					ok=false;
 				}
 				i++
-				console.groupEnd();
+				//console.groupEnd();
 			}
 			if(ok){
-				console.log("result=true");
+				//console.log("result=true");
 				stats.checkup.up2Date++;
-				console.groupEnd();
+				//console.groupEnd();
 				return true;
 			}else{
-				console.log("result=false");
+				//console.log("result=false");
 				stats.checkup.modified++;
-				console.groupEnd();
+				//console.groupEnd();
 				return false;
 			}
 		}
 	}else
 	if(mode===2){
-		console.log("movie.id=",movie.id);
-		console.log("movie.main=",movie.main);
-		console.log("movie.background=",movie.background);
+		//console.log("movie.id=",movie.id);
+		//console.log("movie.main=",movie.main);
+		//console.log("movie.background=",movie.background);
 		if(isObjEquivalent(movie.main,movie.background)){
-			console.log("isObjEquivalent=true");
-			console.groupEnd();
+			console.warn("notEquivalent:",[movie.main,movie.background]);
+			//console.log("isObjEquivalent=true");
+			//console.groupEnd();
 			return true;
 		}else{
-			console.log("isObjEquivalent=false");
-			console.groupEnd();
+			//console.log("isObjEquivalent=false");
+			//console.groupEnd();
 			return false;
 		}
 	}
-	console.groupEnd();
+	//console.groupEnd();
 }
 
 function reply(obj={none:'none'}) {
-	console.groupCollapsed('reply');
-	console.log("obj=",obj);
+	//console.groupCollapsed('reply');
+	//console.log("obj=",obj);
     if (obj) { 
 		stats.sent++;
-		console.groupEnd();
+		//console.groupEnd();
         postMessage(obj);
     }else{
-		console.groupEnd();
+		//console.groupEnd();
 	} 
 }

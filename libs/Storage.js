@@ -1,60 +1,60 @@
 class SessionStorage{
 	static save(options={}){
-		console.groupCollapsed('sessionStorageSave');
+		//console.groupCollapsed('sessionStorageSave');
 		try {
-			console.log('name=',options.name);
-			console.log('value=',options.value);
+			//console.log('name=',options.name);
+			//console.log('value=',options.value);
 			if(typeof options.name === 'undefined'||options.name.length<1){
 				console.warn('Faile no name');
-				console.groupEnd();
+				//console.groupEnd();
 				return false;
 			}
 			sessionStorage.setItem(options.name, options.value);
-			console.log('set');
-			console.groupEnd();
+			//console.log('set');
+			//console.groupEnd();
 			return true;
 		}
 		catch(e) {
-			console.error(e);
-			console.groupEnd();
+			//console.error(e);
+			//console.groupEnd();
 			return false;
 		}
 	}
 	static read(name){
-		console.groupCollapsed('sessionStorageRead');
+		//console.groupCollapsed('sessionStorageRead');
 		try {
-			console.log('name=',name);
+			//console.log('name=',name);
 			if(name.length<1){
 				console.warn('Faile no name');
-				console.groupEnd();
+				//console.groupEnd();
 				return false;
 			}
 			var out=sessionStorage.getItem(name);
-			console.log('out=',out);
-			console.groupEnd();
+			//console.log('out=',out);
+			//console.groupEnd();
 			return out;
 		}
 		catch(e) {
-			console.error(e);
-			console.groupEnd();
+			//console.error(e);
+			//console.groupEnd();
 			return false;
 		}
 	}
 	static remove(name=''){
-		console.groupCollapsed('sessionStorageDelete');
+		//console.groupCollapsed('sessionStorageDelete');
 		try {
-			console.log('name=',name);
+			//console.log('name=',name);
 			if(typeof name === 'undefined'||name.length<1){
 				console.warn('Faile no name');
-				console.groupEnd();
+				//console.groupEnd();
 				return false;
 			}
 			sessionStorage.removeItem(name);
 			return true;
 		}
 		catch(e) {
-			console.error(e);
-			console.groupEnd();
+			//console.error(e);
+			//console.groupEnd();
 			return false;
 		}
 	}	
@@ -64,11 +64,11 @@ class SessionStorage{
 				x = '__storage_test__';
 			storage.setItem(x, x);
 			storage.removeItem(x);
-			console.log('sessionStoragestorageAvailable:','true');
+			//console.log('sessionStoragestorageAvailable:','true');
 			return true;
 		}
 		catch(e) {
-			console.log('sessionStoragestorageAvailable:','false');
+			//console.log('sessionStoragestorageAvailable:','false');
 			return e instanceof DOMException && (
 				
 				// everything except Firefox
@@ -87,17 +87,17 @@ class SessionStorage{
 }
 class CookieStorage{
 	static save(options={}){
-		console.groupCollapsed('CookieStorageSaveCookie');
+		//console.groupCollapsed('CookieStorageSaveCookie');
 		try {
-			console.log('name=',options.name);
-			console.log('value=',options.value);
-			console.log('days=',options.days);
-			console.log('path=',options.path);
-			console.log('noEncode=',options.noEncode);
+			//console.log('name=',options.name);
+			//console.log('value=',options.value);
+			//console.log('days=',options.days);
+			//console.log('path=',options.path);
+			//console.log('noEncode=',options.noEncode);
 			var send="";
 			if(typeof options.name === 'undefined'||options.name.length<1){
 				console.warn('Faile no name');
-				console.groupEnd();
+				//console.groupEnd();
 				return false;
 			}
 			send+=options.name;
@@ -114,49 +114,49 @@ class CookieStorage{
 			if(options.path&&1<=options.path.length){
 				send+=";path=/"+options.path;
 			}
-			console.log('saveCookie=',send);
-			console.groupEnd();
+			//console.log('saveCookie=',send);
+			//console.groupEnd();
 			document.cookie = send;
 			return true;
 		}
 		catch(e) {
-			console.error(e);
-			console.groupEnd();
+			//console.error(e);
+			//console.groupEnd();
 			return false;
 		}
 	}
 	static remove(options={}){
-		console.groupCollapsed('CookieStorageDeleteCookie');
+		//console.groupCollapsed('CookieStorageDeleteCookie');
 		try {
-			console.log('name=',options.name);
-			console.log('path=',options.path);
+			//console.log('name=',options.name);
+			//console.log('path=',options.path);
 			if(typeof options.name === 'undefined'||options.name.length<1){
 				console.warn('Faile no name');
-				console.groupEnd();
+				//console.groupEnd();
 				return false;
 			}
 			var send=options.name + "=" + "" + ";expires=Thu, 01 Jan 1970 00:00:01 GMT;";
 			if(options.path&&1<=options.path.length){
 				send+=";path=/"+options.path;
 			}
-			console.log('removeCookie=',send);
-			console.groupEnd();
+			//console.log('removeCookie=',send);
+			//console.groupEnd();
 			document.cookie = send;	
 			return true;
 		}	
 		catch(e) {
-			console.error(e);
-			console.groupEnd();
+			//console.error(e);
+			//console.groupEnd();
 			return false;
 		}		
 	}
 	static read(name='',noDecode=false) {
-		console.groupCollapsed('CookieStorageReadCookie');
+		//console.groupCollapsed('CookieStorageReadCookie');
 		try {
-			console.log('name=',name);
+			//console.log('name=',name);
 			if(typeof name === 'undefined'||name.length<1){
 				console.warn('Faile no name');
-				console.groupEnd();
+				//console.groupEnd();
 				return false;
 			}
 			name = name + "="; 
@@ -166,7 +166,7 @@ class CookieStorage{
 				var cookieData = document.cookie;
 			}
 			
-			console.log('cookieData=',cookieData);
+			//console.log('cookieData=',cookieData);
 			var ca = cookieData.split(';');
 			for(var i = 0; i <ca.length; i++){
 				var c = ca[i];
@@ -175,47 +175,47 @@ class CookieStorage{
 				}
 				if (c.indexOf(name) == 0){
 					var value=c.substring(name.length, c.length);
-					console.log('value=',value);
-					console.groupEnd();
+					//console.log('value=',value);
+					//console.groupEnd();
 					return value;
 				}
 			}
 			console.warn('Not found');
-			console.groupEnd();
+			//console.groupEnd();
 			return '';
 		}
 		catch(e) {
-			console.error(e);
-			console.groupEnd();
+			//console.error(e);
+			//console.groupEnd();
 			return false;
 		}
 	}
 	static  storageAvailable(){
-		console.groupCollapsed('storageAvailable');
+		//console.groupCollapsed('storageAvailable');
 		let r=this.ifEnabled();
-		console.groupEnd();
+		//console.groupEnd();
 		return r;
 	}
 	static ifEnabled() {
-		console.groupCollapsed('CookieStorageifEnabled');
+		//console.groupCollapsed('CookieStorageifEnabled');
 		try {
 			this.save({name:"IfEnabledCookie_test", value:"test", days:2});
 			var cookie=this.read("IfEnabledCookie_test");
 			if(cookie){
 				this.remove({name:"IfEnabledCookie_test"}); 
-				console.log('Enabled');
-				console.groupEnd();
+				//console.log('Enabled');
+				//console.groupEnd();
 				return true;
 			}else{
 				this.remove({name:"IfEnabledCookie_test"});
 				console.warn('NotEnabled');
-				console.groupEnd();
+				//console.groupEnd();
 				return false;
 			}
 		}
 		catch(e) {
-			console.error(e);
-			console.groupEnd();
+			//console.error(e);
+			//console.groupEnd();
 			return false;
 		}
 	}

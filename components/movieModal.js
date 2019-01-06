@@ -102,11 +102,14 @@ class movieModal {
 					console.log('value=',input.value);
 					let movieid=id.replace("new", "");
 					console.log('moviekey=',movieid);
-					console.log('old value=',me.movie[movieid]);
-					modalElements["submit"].movie[movieid]=input.value;
-					console.log('new value=',me.movie[movieid]);
+					if(movieid!=""){
+						console.log('old value=',me.movie[movieid]);
+						modalElements["submit"].movie[movieid]=input.value;	
+						console.log('new value=',me.movie[movieid]);
+					}
 					console.groupEnd();
 				});
+				console.log("movie=",modalElements["submit"].movie);
 				if(me.mode==="edit"){
 					console.log('edit movie');
 					me.movie.editMovie().then(

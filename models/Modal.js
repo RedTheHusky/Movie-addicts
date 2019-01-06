@@ -51,7 +51,7 @@ class Modal {
 			this.add2Head(options.add2Head);
 		}
 		if(options.loadMode&&(options.loadMode==="n"||options.loadMode===0)){
-			console.log("not included in dom's heade");
+			//console.log("not included in dom's heade");
 			this.loaded.css=false;
 			this.loaded.js=false;
 		}
@@ -79,49 +79,49 @@ class Modal {
 			h/4) included in dom's head
 		*/
 		if(options.loadMode&&(options.loadMode==="n"||options.loadMode===0)){
-			console.log("included in dom's head");
+			//console.log("included in dom's head");
 			this.loaded.css=true;
 			this.loaded.js=true;
 		}else
 		if(options.loadMode&&(options.loadMode==="h"||options.loadMode===4)){
-			console.log("not included in dom's heade");
+			//console.log("not included in dom's heade");
 			this.loaded.css=false;
 			this.loaded.js=false;
 		}
 		if(loadMode==='a'||loadMode==='c'||loadMode===1||loadMode===3){
-			console.groupCollapsed('dynamicallyLoadStylesheet');
+			//console.groupCollapsed('dynamicallyLoadStylesheet');
 			var css = document.createElement("link");  
 			css.href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";  
 			css.setAttribute("rel","stylesheet");
 			document.head.appendChild(css);  
 			if (css.addEventListener) {
 				css.addEventListener('load', function() {
-					console.log("CSS Done 1");
+					console.log("CSS Done");
 					me.loaded.css=true;
 					if(options.callback&&me.loaded.js){
-						console.log("Do callback");
+						//console.log("Do callback");
 						options.callback();
 					}
 				}, false);   
 			};    
-			console.groupEnd();
+			//console.groupEnd();
 		}
 		if(loadMode==='a'||loadMode==='s'||loadMode===1||loadMode===2){
-			console.groupCollapsed('dynamicallyLoadScript');
+			//console.groupCollapsed('dynamicallyLoadScript');
 			var script = document.createElement("script");  
 			script.src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js";  
 			document.head.appendChild(script);  
 			if (script.addEventListener) {
 				script.addEventListener('load', function() {
-					console.log("script Done 1");
+					console.log("script Done");
 					me.loaded.js=true;
 					if(options.callback&&me.loaded.css){
-						console.log("Do callback");
+						//console.log("Do callback");
 						options.callback();
 					}
 				}, false);   
 			};    
-			console.groupEnd();
+			//console.groupEnd();
 		}
 		console.groupEnd();
 	}
@@ -137,7 +137,7 @@ class Modal {
 			}
 		}
 		console.log('root=',this.root);
-		console.log('modal=',$('#'+this.modal.id)[0]);
+		//console.log('modal=',$('#'+this.modal.id)[0]);
 		if($('#'+this.modal.id)[0]){
 			console.warn("already exists");
 			console.groupEnd();
@@ -152,8 +152,9 @@ class Modal {
 			this.modal.dom.innerHTML = this.content;
 			this.root.dom.appendChild(this.modal.dom);	
 			this.modal.jquery=$('#'+this.modal.id); 
-			console.log('dom=',this.modal.dom);
-			console.log('jquery=',this.modal.jquery);
+			//console.log('dom=',this.modal.dom);
+			//console.log('jquery=',this.modal.jquery);
+			console.log('Modal created');
 		}else{
 			console.warn('Dom element does not exists');
 		}
@@ -197,31 +198,31 @@ class Modal {
 			if(!me.root.dom.querySelector(option.selector)){
 				console.warn('No element for: ', index);
 			}else{
-				console.log("element:",me.modal.dom.querySelector(option.selector));
+				//console.log("element:",me.modal.dom.querySelector(option.selector));
 				if(option.task==="inner"){
-					console.log("set: inner");
+					//console.log("set: inner");
 					me.modal.dom.querySelector(option.selector).innerHTML=option.value;
-					console.log("get:",me.modal.dom.querySelector(option.selector));
+					//console.log("get:",me.modal.dom.querySelector(option.selector));
 				}else
 				if(option.task==="attribute-add"){
-					console.log("set: attribute-add");
+					//console.log("set: attribute-add");
 					me.modal.dom.querySelector(option.selector).setAttribute(option.name,option.value);
-					console.log("get:",me.modal.dom.querySelector(option.selector));
+					//console.log("get:",me.modal.dom.querySelector(option.selector));
 				}else
 				if(option.task==="attribute-remove"){
-					console.log("set: attribute-remove");
+					//console.log("set: attribute-remove");
 					me.modal.dom.querySelector(option.selector).removeAttribute(option.name);
-					console.log("get:",me.modal.dom.querySelector(option.selector));
+					//console.log("get:",me.modal.dom.querySelector(option.selector));
 				}else
 				if(option.task==="class-add"){
-					console.log("set: class-add");
+					//console.log("set: class-add");
 					me.modal.dom.querySelector(option.selector).classList.add(option.value);
-					console.log("get:",me.modal.dom.querySelector(option.selector));
+					//console.log("get:",me.modal.dom.querySelector(option.selector));
 				}else
 				if(option.task==="class-remove"){
-					console.log("set: class-remove");
+					//console.log("set: class-remove");
 					me.modal.dom.querySelector(option.selector).classList.remove(option.value);
-					console.log("get:",me.modal.dom.querySelector(option.selector));
+					//console.log("get:",me.modal.dom.querySelector(option.selector));
 				}else{
 					console.warn('No task for: ', index);
 				}
@@ -254,7 +255,7 @@ class Modal {
 			console.groupEnd();
 			return false;
 		}
-		console.log("ok");
+		//console.log("ok");
 		console.groupEnd();
 		return true;
 	}
@@ -272,13 +273,12 @@ class Modal {
 			console.groupEnd();
 			return;
 		}
-		//multiple methods to support multiple condition of being called toggle/show/hide
 		if(this.modal.jquery&&this.modal.jquery.modal){
-			console.log('method 1');
 			this.modal.jquery.modal(option);
 		}else{
 			console.warn("No way to toggle it!");
 		}
+		console.groupEnd();
 	}
 	show(){
 		console.groupCollapsed('show');
@@ -292,14 +292,14 @@ class Modal {
 	}
 	isElement(o){
 		//checks if o is an HTML element 
-		console.groupCollapsed('isElement');
-		console.log('o=',o);
+		//console.groupCollapsed('isElement');
+		//console.log('o=',o);
 		var r=(
 			typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
 			o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName==="string"
 		);
-		console.log('r=',r);
-		console.groupEnd();
+		//console.log('r=',r);
+		//console.groupEnd();
 		return r;
 	}
 	getElements(selector=""){

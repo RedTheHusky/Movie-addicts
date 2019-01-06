@@ -1,6 +1,6 @@
 let jokeSocialMediaCall={
 	init:function(options={}) {
-		console.groupCollapsed('init');
+		//console.groupCollapsed('init');
 		this.modal="";
 		this.root={id:'',dom:'',jquery:''};
 		this.statusLog={inputError:[]};
@@ -18,11 +18,11 @@ let jokeSocialMediaCall={
 				}
 			}
 		}
-		console.groupEnd();
+		//console.groupEnd();
 	},
 	addModal2Root:function(options={}) {
 		//generates and appends the modal html elements to the rootdoom
-		console.groupCollapsed('addModal2Root');
+		//console.groupCollapsed('addModal2Root');
 		if(!(typeof options === 'object')){options={}};
 		if(options.root){
 			this.root.id = options.root;
@@ -31,29 +31,29 @@ let jokeSocialMediaCall={
 				this.root.jquery=$('#'+this.root.id); 
 			}
 		}
-		console.log('root=',this.root);
+		//console.log('root=',this.root);
 		this.modal= new Modal({root:this.root.id});
 		if(!options.addSkip){
 			this.modal.addModal2Root(options.modal);
 		}
-		console.groupEnd();
+		//console.groupEnd();
 	},
 	addEvents:function(){
-		console.groupCollapsed('addEvents');
-		console.groupCollapsed('4Buttons');
+		//console.groupCollapsed('addEvents');
+		//console.groupCollapsed('4Buttons');
 		this.buttonsList=document.querySelectorAll('.jokesocialmediacall');
 		//let listToAdd=['facebook','instagram','twitch','twitter','youtube'];
 		let me=this;
 		this.buttonsList.forEach(function(element,i){
 			element.addEventListener("click", function(event){
 				event.preventDefault();
-				console.groupCollapsed('click');
-				console.log('element=',element);
+				//console.groupCollapsed('click');
+				//console.log('element=',element);
 				//let element_has="";
 				/*OPTIONAL : if we want them to have different title or body based on listToAdd
 				listToAdd.forEach(function(x,i){
 					let classC=element.classList;
-					console.log('classC=',classC);
+					//console.log('classC=',classC);
 					classC.forEach(function(y,j){
 						if(y.includes(x)) {
 							element_has=x;
@@ -64,11 +64,11 @@ let jokeSocialMediaCall={
 					me.modal.setElement([{selector:".modal-title", task:"inner", value:"Opps."},{selector:".modal-body", task:"inner", value:"Would open the page if there was any to open. :3"}]);
 				//}
 				me.showModal();
-				console.groupEnd();
+				//console.groupEnd();
 			});
 		});
-		console.groupEnd();
-		console.groupEnd();
+		//console.groupEnd();
+		//console.groupEnd();
 	},
 	showModal:function(){
 		this.modal.show();
