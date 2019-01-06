@@ -448,13 +448,14 @@ let authModal={
 			console.groupEnd();
 			return false;
 		}
+		let text=options.element.value.trim();
 		if(options.type){
 			if(options.type==='name'){
-				if(options.element.value.length<this.settings.nameLength_min){
+				if(text.length<this.settings.nameLength_min){
 					//console.warn('name to small');
 					options.element.classList.add(this.settings.classList.invalid);result=false;
 				}else
-				if(options.element.value.length>this.settings.nameLength_max){
+				if(text.length>this.settings.nameLength_max){
 					//console.warn('name to big');
 					options.element.classList.add(this.settings.classList.invalid);result=false;
 				}else{
@@ -462,11 +463,11 @@ let authModal={
 				}
 			}else
 			if(options.type==='password'){
-				if(options.element.value.length<this.settings.passwordLength_min){
+				if(text.length<this.settings.passwordLength_min){
 					//console.warn('password to small');
 					options.element.classList.add(this.settings.classList.invalid);result=false;
 				}else
-				if(options.element.value.length>this.settings.passwordLength_max){
+				if(text.length>this.settings.passwordLength_max){
 					//console.warn('password to big');
 					options.element.classList.add(this.settings.classList.invalid);result=false;
 				}else{
@@ -474,7 +475,7 @@ let authModal={
 				}
 			}else
 			if(options.type==='email'){
-				if(!this.validateEmail(options.element.value)){
+				if(!this.validateEmail(text)){
 					//console.warn('invalid email');
 					options.element.classList.add(this.settings.classList.invalid);result=false;
 				}else{
@@ -498,6 +499,9 @@ let authModal={
 		console.groupCollapsed('authModal@inputCheck');
 		console.log('profile.mode=',this.profile.mode);
 		var errorLog=[];
+		this.modal.modal.dom.querySelectorAll('input').forEach(function(input,i){
+			input.value=input.value.trim();
+		});
 		if(this.modal.modal.dom.querySelector('input[name="username"]').value.length<this.settings.nameLength_min){
 			console.warn('name too small');
 			errorLog.push('name too small');
@@ -591,8 +595,8 @@ let authModal={
 		console.groupCollapsed('authModal@callLogIn');
 		if(this.inputCheck()){
 			var data={};
-			data.username=this.modal.modal.dom.querySelector('input[name="username"]').value;
-			data.password=this.modal.modal.dom.querySelector('input[name="password"]').value;
+			data.username=this.modal.modal.dom.querySelector('input[name="username"]').value.trim();
+			data.password=this.modal.modal.dom.querySelector('input[name="password"]').value.trim();
 			console.log('data=',data);
 			let me=this;
 			this.statusLog.callResponse={status:0,mode:1,data:data,response:""};
@@ -655,8 +659,8 @@ let authModal={
 		console.groupCollapsed('authModal@callRegister');
 		if(this.inputCheck()){
 			var data={};
-			data.username=this.modal.modal.dom.querySelector('input[name="username"]').value;
-			data.password=this.modal.modal.dom.querySelector('input[name="password"]').value;
+			data.username=this.modal.modal.dom.querySelector('input[name="username"]').value.trim();
+			data.password=this.modal.modal.dom.querySelector('input[name="password"]').value.trim();
 			//the movie api does not require email, so it's pointless to add one 
 			console.log('data=',data);
 			this.displayNotification({type:1,body:"<p>Please wait</p>"});
