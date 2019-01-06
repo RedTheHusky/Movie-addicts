@@ -1,28 +1,27 @@
 var movie = new Movie();
-var backgroundSync;
-var modalElements={};
-function backgroundSyncLoad(){
+var backgroundSync;var modalElements={};extraLoad();//added by Tamas
+function extraLoad(){//added by Tamas
+	console.groupCollapsed('extraLoad');
+	modalElements["notification"]= new Modal({root:"modalRoot"});
+	modalElements["notification"].addModal2Root();
+	authModal.init({root:"modalRoot",addModal2Root:true,add2Head:true,addEvents:true});
+	auth2Pages.init();
 	console.groupCollapsed('backgroundSyncLoad');
 	if(Worker){
+		if(location.protocol==="file:"||location.protocol==="file"){
+			console.warn('cannot do worker do to invalid protocol');
+			console.groupEnd();
+			return;
+		}
 		backgroundSync = new Worker('../workers/backgroundSync.js');
 		console.log('backgroundSync loaded');
 	}else{
 		console.warn('backgroundSync not loaded');
 	}
 	console.groupEnd();
-}
-function modalLoad(){
-	console.groupCollapsed('modalLoad');
-	modalElements["notification"]= new Modal({root:"modalRoot"});
-	modalElements["notification"].addModal2Root();
-	modalElements["auth"]= new authModal({root:"modalRoot"});
-	modalElements["auth"].addModal2Root();
-	modalElements["auth"].add2Head();
-	modalElements["auth"].addEvents();
 	console.groupEnd();
 }
-backgroundSyncLoad();
-modalLoad();
+
 movie.id = getUrlParameter("_id");
 movie.getMovieDetails().then(function() {
   console.log("Movie details : ", movie);

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Login</title>
+		<html lang="en-US"><!-- added by Tamas -->
+		<link rel="icon" href="../static/32396-popcorn-icon.png">
+		<meta name="Description" content="Team #1 project">
+		<meta http-equiv="X-UA-Compatible" content="IE-Edge">
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://www.google.com/recaptcha/api.js?onload=recaptchaLoaded&render=explicit"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/authPage.css">
+		<link rel="stylesheet" type="text/css" href="../css/auth.css">
+		<script src='../libs/Storage.min.js' type='text/javascript'></script>
+		<script src='../models/Auth.min.js' type='text/javascript'></script>
+		<script src='../models/Modal.min.js' type='text/javascript'></script>
+		<style type="text/css">
+			body{ font: 14px sans-serif; }
+			.wrapper{ width: 400px; padding: 20px; }
+		</style>
+	</head>
+	<body>
+		<div class="wrapper">
+			<div class="menu-header modal-header">
+				<h4 class="menu-title modal-title">User Log In</h4>
+			 </div>		
+			<form action="" >
+			<div class='menu-body modal-body'>
+				<div class='form-group'>
+					<input type="text" name="username" placeholder='Username' value="" class="text-input form-control inputKeyupCheck" style="width:80%">
+				</div>
+				<div class='form-group register-group' style="display:none; width:80%">
+					<input type="text" name="email" placeholder='Email' value="" class="text-input form-control register-input inputKeyupCheck" >
+				</div>
+				<div class='form-group' style="display:block">
+					<input type="password" name="password" value="" placeholder='Password' class="text-input form-control inputKeyupCheck" style="display:inline; width:80%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline;"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="25" width="20"></button>
+				</div>
+				<div class='form-group register-group' style="display:none; width:80%">
+					<input type="password" name="inputConfirmPassword" value="" placeholder='Retype your Password' class="text-input form-control register-input inputKeyupCheck" >
+				</div>
+				<div class='form-group register-group' id="add_g-recaptcha_here" style="display:none">
+					
+				</div>
+			</div>
+			<div class="menu-footer modal-footer">
+				<button type="button" class="btn btn-danger bt-back">Back Page</button>
+				<button type="button" class="btn btn-primary bt-loginOrRegister">Log In</button>
+				<button type="button" class="btn btn-secondary bt-newuserOrback">New</button>
+			</div>
+			</form>
+		</div> 
+		<div id='modalRoot'></div>		
+		<script src="../views/authPage.min.js" type='text/javascript'></script>
+	</body>
+
+</html>

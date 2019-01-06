@@ -1,8 +1,91 @@
+const auth2Pages={ 
+	init:function(){
+		console.groupCollapsed('init');
+		this.addEvent();
+		this.display();
+		console.groupEnd();
+	},
+	addEvent:function(){
+		console.groupCollapsed('addEvent');
+		if(document.querySelector("#btnUserAuth")){
+			console.log('add button event');
+			document.querySelector("#btnUserAuth").addEventListener("click",function(event){
+				event.preventDefault();
+				console.groupCollapsed('btnUserAuth:click');
+				if(Auth.getAccessToken()){
+					console.log('loged in');
+					Auth.userLogOut()
+					.then(
+						function(resolve){
+							console.log('AuthRegister.userLogOut response:resolver=',resolve);	
+							if(typeof doAfterSuccessLogOut !=="undefined"){
+								console.log("trigger doAfterSuccessLogOut");
+								try {
+									doAfterSuccessLogOut({response:resolve});
+								}
+								catch(err) {
+									console.warn('error at function call:',err)
+								}
+							}else{
+								console.log("use internal response");
+								location.reload();	
+							}
+						},
+						function(reject){
+							console.warn('AuthRegister.userLogOut response:reject=',reject);
+							if(typeof doAfterFailedLogOut !=="undefined"){
+								console.log("trigger doAfterSuccessLogOut");
+								try {
+									doAfterFailedLogOut({response:reject});
+								}
+								catch(err) {
+									console.warn('error at function call:',err)
+								}
+							}else{
+								console.log("use internal response");
+								
+							}
+						}
+					);
+				}else{
+					console.log('not loged in');
+					authModal.show();
+				}
+				console.groupEnd();
+			});
+		}else{
+			console.warn("button not found, can't add event");
+			console.groupEnd();
+		}
+	},
+	display:function(){
+		console.groupCollapsed('display');
+		if(Auth.getAccessToken()){
+			console.log('loged in');
+			if(document.querySelector("#labelUserName")){
+				document.querySelector("#labelUserName").innerText="You are logged in as "+Auth.getAccessName();
+			}
+			if(document.querySelector("#btnUserAuth")){
+				document.querySelector("#btnUserAuth").innerText="Log out";
+			}
+		}else{
+			console.log('not loged in');
+			if(document.querySelector("#labelUserName")){
+				document.querySelector("#labelUserName").innerText="No user is loged in";
+			}
+			if(document.querySelector("#btnUserAuth")){
+				document.querySelector("#btnUserAuth").innerText="Log in";
+			}
+		}
+	}
+
+}
+
 //component based on the idea of Modules 
 //need to replace this with Modules and not Models but can't figure out why import is not working 
-class authModal {
-	constructor(options={}) {
-		console.groupCollapsed('constructor');
+const authModal={
+	init:function(options={}) {
+		console.groupCollapsed('init');
 		if(!(typeof options === 'object')){options={}};
 		function uuidv4() {
 		  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -10,18 +93,18 @@ class authModal {
 			return v.toString(16);
 		  });
 		}
-		this.objName="";
 		this.root={id:'',dom:'',jquery:''};
 		this.modal="";
 		this.widgetId=-1;
 		this.id=uuidv4();
-		this.profile={mode:1,eye:0,protocol:''};
+		this.profile={mode:1,eye:0,protocol:'',mouseEye:0};
+		this.statusLog={inputError:[]};
 		this.settings={nameLength_min:6,nameLength_max:36,passwordLength_min:6,passwordLength_max:36, classList:{invalid:"error-content"}};
 		if(options.root){
 			this.root.id = options.root;
 			if(this.root.id){
 				this.root.dom=document.getElementById(this.root.id);
-				this.root.jquery=$('#'+this.modal.id); 
+				this.root.jquery=$('#'+this.root.id); 
 			}
 			if(options.addModal2Root){
 				this.addModal2Root(options.addModal2Root);
@@ -35,10 +118,9 @@ class authModal {
 		}
 		this.profile.protocol=location.protocol;
 		console.log('profile.protocol=',this.profile.protocol);
-		this.objName=this.constructor.name;
 		console.groupEnd();
-	}
-	add2Head(options={}){
+	},
+	add2Head:function(options={}){
 		console.groupCollapsed('add2Head');
 		if(!(typeof options === 'object')){options={}};
 		let script={};
@@ -52,8 +134,8 @@ class authModal {
 			}, false);   
 		}; 
 		console.groupEnd();		
-	}
-	addModal2Root(options={}) {
+	},
+	addModal2Root:function(options={}) {
 		//generates and appends the modal html elements to the rootdoom
 		console.groupCollapsed('addModal2Root');
 		if(!(typeof options === 'object')){options={}};
@@ -82,7 +164,7 @@ class authModal {
 					<input type="text" name="email" placeholder='Email' value="" class="text-input form-control register-input inputKeyupCheck">
 				</div>
 				<div class='form-group' style="display:block">
-					<input type="password" name="password" value="" placeholder='Password' class="text-input form-control inputKeyupCheck" style="display:inline; width:90%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline;"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="25" width="20"></button>
+					<input type="password" name="password" value="" placeholder='Password' class="text-input form-control inputKeyupCheck" style="display:inline; width:90%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline;"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="20" width="20"></button>
 				</div>
 				<div class='form-group register-group' style="display:none">
 					<input type="password" name="inputConfirmPassword" value="" placeholder='Retype your Password' class="text-input form-control register-input inputKeyupCheck" >
@@ -96,7 +178,7 @@ class authModal {
 			</div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger bt-close" data-dismiss="modal">Close</button>
 		<button type="button" class="btn btn-primary bt-loginOrRegister">Log In</button>
 		<button type="button" class="btn btn-secondary bt-newuserOrback">New</button>
 		<button type="button" class="btn btn-secondary bt-closenotification" style="display:none">Retry</button>
@@ -109,8 +191,8 @@ class authModal {
 			this.modal.addModal2Root(options.modal);
 		}
 		console.groupEnd();
-	}
-	displayLogIn(){
+	},
+	displayLogIn:function(){
 		console.groupCollapsed('displayLogIn');
 		this.inputClear();
 		this.profile.mode=1;
@@ -124,8 +206,8 @@ class authModal {
 		this.modal.modal.dom.querySelector('.bt-newuserOrback').innerHTML="New";
 		this.modal.modal.dom.querySelector('.bt-loginOrRegister').innerHTML="Log In";
 		console.groupEnd();
-	}
-	displayRegister(){
+	},
+	displayRegister:function(){
 		console.groupCollapsed('displayRegister');
 		this.inputClear();
 		this.profile.mode=2;
@@ -155,11 +237,19 @@ class authModal {
 		this.modal.modal.dom.querySelector('.bt-loginOrRegister').innerHTML="Register";
 		
 		console.groupEnd();
-	}
-	addEvents(){
+	},
+	addEvents:function(){
 		console.groupCollapsed('addEvents');
 		console.groupCollapsed('4Buttons');
 		let me=this;
+		this.modal.modal.dom.querySelector('.bt-close').addEventListener("click", function(event){
+			event.preventDefault();
+			console.groupCollapsed('.bt-close:click');
+			me.inputClear();
+			me.eye2PasswordToggle(-1);
+			me.displayNotificationUndo();
+			console.groupEnd();
+		});
 		this.modal.modal.dom.querySelector('.bt-closenotification').addEventListener("click", function(event){
 			event.preventDefault();
 			console.groupCollapsed('.bt-closenotification:click');
@@ -169,7 +259,7 @@ class authModal {
 		this.modal.modal.dom.querySelector(".btn-eye2Password").addEventListener("click", function(event){
 			event.preventDefault();
 			console.groupCollapsed('.bt-eye2Password:click');
-			me.eye2PasswordToggle(2,me);
+			me.eye2PasswordToggle(2);
 			console.groupEnd();
 		});
 		this.modal.modal.dom.querySelector(".bt-newuserOrback").addEventListener("click", function(event){
@@ -221,63 +311,68 @@ class authModal {
 			this.modal.modal.dom.querySelector(".btn-eye2Password").addEventListener("mouseover", function(event){
 				event.preventDefault();
 				console.groupCollapsed('passwordEye:mouseover');
-				me.eye2PasswordToggle(1,me);
+				me.profile.mouseEye=true;
+				me.eye2PasswordToggle(1);
 				console.groupEnd();
 			});
 			this.modal.modal.dom.querySelector(".btn-eye2Password").addEventListener("mouseleave", function(event){
 				event.preventDefault();
 				console.groupCollapsed('passwordEye:mouseleave');
-				me.eye2PasswordToggle(0,me);
+				me.profile.mouseEye=false;
+				me.eye2PasswordToggle(0);
 				console.groupEnd();
 			});
 		console.groupEnd();
 		console.groupEnd();
-	}
-	eye2PasswordToggle(mode=0, me=""){
+	},
+	eye2PasswordToggle:function(mode=0){
 		console.groupCollapsed('eye2PasswordToggle');
-		console.log("mode=",mode);
-		if(!me)me=this;
+		if(mode===-1){//reset
+			console.log('resets profile eye');
+			this.profile.eye=false;
+		}
 		if(mode===2||mode===20||mode===21){
 			if(mode===20){//force hide
-				me.profile.eye=true;
+				this.profile.eye=true;
 			}
 			if(mode===21){//force show
-				me.profile.eye=false;
+				this.profile.eye=false;
 			}
 			if(this.profile.eye){
 				console.log('hide');
-				me.profile.eye=false;
-				me.modal.modal.dom.querySelector('input[name="password"]').setAttribute('type', 'password');
-				me.modal.modal.dom.querySelector(".btn-eye2Password").classList.add("btn-warning");
-				me.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-info");
-				me.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-success");
+				this.profile.eye=false;
+				this.modal.modal.dom.querySelector('input[name="password"]').setAttribute('type', 'password');
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.add("btn-warning");
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-info");
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-success");
 			}else{
 				console.log('show');
-				me.profile.eye=true;
-				me.modal.modal.dom.querySelector('input[name="password"]').setAttribute('type', 'text');
-				me.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-warning");
-				me.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-info");
-				me.modal.modal.dom.querySelector(".btn-eye2Password").classList.add("btn-success");
+				this.profile.eye=true;
+				this.modal.modal.dom.querySelector('input[name="password"]').setAttribute('type', 'text');
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-warning");
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-info");
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.add("btn-success");
 			}
 		}else
 		if(mode===1){
-			if(!me.profile.eye){
+			if(!this.profile.eye){
 				console.log('show');
-				me.modal.modal.dom.querySelector('input[name="password"]').setAttribute('type', 'text');
-				me.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-warning");
-				me.modal.modal.dom.querySelector(".btn-eye2Password").classList.add("btn-info");
+				this.modal.modal.dom.querySelector('input[name="password"]').setAttribute('type', 'text');
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-warning");
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.add("btn-info");
 			}
 		}else{
-			if(!me.profile.eye){
+			if(!this.profile.eye){
 				console.log('hide');
-				me.modal.modal.dom.querySelector('input[name="password"]').setAttribute('type', 'password');
-				me.modal.modal.dom.querySelector(".btn-eye2Password").classList.add("btn-warning");
-				me.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-info");
+				this.modal.modal.dom.querySelector('input[name="password"]').setAttribute('type', 'password');
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.add("btn-warning");
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-info");
+				this.modal.modal.dom.querySelector(".btn-eye2Password").classList.remove("btn-success");
 			}
 		}
 		console.groupEnd();
-	}
-	inputClear(){
+	},
+	inputClear:function(){
 		console.groupCollapsed('inputClear');
 		let me=this;
 		this.modal.modal.dom.querySelectorAll('.text-input').forEach(function(element,index){
@@ -285,16 +380,16 @@ class authModal {
 			element.classList.remove(me.settings.classList.invalid);
 		});
 		console.groupEnd();
-	}
-	inputKeyupCheckClear(){
+	},
+	inputKeyupCheckClear:function(){
 		console.groupCollapsed('inputKeyupCheck');
 		let me=this;
 		this.modal.modal.dom.querySelectorAll('.inputKeyupCheck').forEach(function(element,index){
 			element.classList.remove(me.settings.classList.invalid);
 		});
 		console.groupEnd();
-	}
-	inputKeyupCheck(options={}){
+	},
+	inputKeyupCheck:function(options={}){
 		console.groupCollapsed('inputKeyupCheck');
 		console.log('options:',options);
 		if(!options.element){
@@ -337,8 +432,8 @@ class authModal {
 			}
 		}
 		console.groupEnd();
-	}
-	validateEmail(email) {
+	},
+	validateEmail:function(email) {
 		console.groupCollapsed('validateEmail');
 		console.log('email=',email);
 		var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -346,8 +441,8 @@ class authModal {
 		console.log('result=',result);
 		console.groupEnd();
 		return result;
-	}
-	inputCheck(){
+	},
+	inputCheck:function(){
 		console.groupCollapsed('inputCheck');
 		console.log('profile.mode=',this.profile.mode);
 		var errorLog=[];
@@ -387,6 +482,7 @@ class authModal {
 				console.warn('Its not on network, disabling g-recaptcha requirement');
 			}
 		}
+		this.statusLog.inputError=errorLog;
 		if(errorLog.length>0){
 			console.warn('has error, will not commence ajax');
 			console.warn('errorLog=',errorLog);
@@ -406,8 +502,8 @@ class authModal {
 		console.log('return:true');
 		console.groupEnd();
 		return true;
-	}
-	displayNotificationUndo(){
+	},
+	displayNotificationUndo:function(){
 		console.groupCollapsed('displayNotificationUndo');
 		this.modal.modal.dom.querySelector('.loginOrRegister').style.display="";
 		this.modal.modal.dom.querySelector('.notification').style.display="none";
@@ -415,8 +511,8 @@ class authModal {
 		this.modal.modal.dom.querySelector('.bt-newuserOrback').style.display="";
 		this.modal.modal.dom.querySelector('.bt-closenotification').style.display="none";
 		console.groupEnd();
-	}
-	displayNotification(options={}){
+	},
+	displayNotification:function(options={}){
 		console.groupCollapsed('displayNotification');
 		console.log("options=",options);	
 		if(options.type){
@@ -438,8 +534,8 @@ class authModal {
 		this.modal.modal.dom.querySelector('.loginOrRegister').style.display="none";
 		this.modal.modal.dom.querySelector('.notification').style.display="block";
 		console.groupEnd();
-	}
-	callLogIn(){
+	},
+	callLogIn:function(){
 		console.groupCollapsed('callLogIn');
 		if(this.inputCheck()){
 			var data={};
@@ -447,24 +543,40 @@ class authModal {
 			data.password=this.modal.modal.dom.querySelector('input[name="password"]').value;
 			console.log('data=',data);
 			let me=this;
+			this.statusLog.callResponse={status:0,mode:1,data:data,response:""};
 			this.displayNotification({type:1,body:"<p>Please wait</p>"});
 			Auth.userLogIn(data)
 			.then(
 				function(resolve){
 					console.log('AuthRegister.userLogIn response:resolve=',resolve);
+					me.statusLog.callResponse.status=1;me.statusLog.callResponse.response=resolve;
+					me.close();
 					if(typeof doAfterSuccessLogin !=="undefined"){
 						console.log("trigger doAfterSuccessLogin");
-						doAfterSuccessRegister({obj:me,response:resolve});
+						try {
+							doAfterSuccessRegister({obj:me,response:resolve});
+						}
+						catch(err) {
+							console.warn('error at function call:',err)
+						}
 					}else{
 						console.log("use internal response");
 						me.doAfterSuccessResponse();
 					}
 					
-				},function(reject){
+				},
+				function(reject){
 					console.log('AuthRegister.userLogIn response:reject=',reject);
+					me.statusLog.callResponse.status=-1;me.statusLog.callResponse.response=reject;
 					if(typeof doAfterFailedLogin !=="undefined"){
+						me.close();
 						console.log("trigger doAfterFailedLogin");
-						doAfterSuccessRegister({obj:me,response:resolve});
+						try {
+							doAfterFailedLogin({obj:me,response:reject});
+						}
+						catch(err) {
+							console.warn('error at function call:',err)
+						}
 					}else{
 						console.log("use internal response");
 						reject.called="Log in";
@@ -477,8 +589,8 @@ class authModal {
 			console.warn('aborded');
 			console.groupEnd();
 		}
-	}
-	callRegister(){
+	},
+	callRegister:function(){
 		console.groupCollapsed('callRegister');
 		if(this.inputCheck()){
 			var data={};
@@ -488,14 +600,22 @@ class authModal {
 			console.log('data=',data);
 			this.displayNotification({type:1,body:"<p>Please wait</p>"});
 			let me=this;
-			let use;
+			this.statusLog.callResponse={status:0,mode:2,data:data,response:""};
 			Auth.userRegister(data)
 			.then(
 				function(resolve){
 					console.log('AuthRegister.userRegister response:resolve=',resolve);
+					me.statusLog.callResponse.status=1;me.statusLog.callResponse.response=resolve;
+					me.close();
 					if(typeof doAfterSuccessRegister !=="undefined"){
 						console.log("trigger doAfterSuccessRegister");
-						doAfterSuccessRegister({obj:me,response:resolve});
+						try {
+							doAfterSuccessRegister({obj:me,response:resolve});
+						}
+						catch(err) {
+							console.warn('error at function call:',err)
+						}
+						
 					}else{
 						console.log("use internal response");
 						me.doAfterSuccessResponse();
@@ -504,9 +624,16 @@ class authModal {
 				},function(reject){
 					console.log('AuthRegister.userRegister response:reject=',reject);
 					reject.called="Register";
+					me.statusLog.callResponse.status=-1;me.statusLog.callResponse.response=reject;
 					if(typeof doAfterFailedRegister !=="undefined"){
 						console.log("trigger doAfterFailed");
-						doAfterFailed({obj:me,response:reject});
+						me.close();
+						try {
+							doAfterFailedRegister({obj:me,response:reject});
+						}
+						catch(err) {
+							console.warn('error at function call:',err)
+						}
 					}else{
 						console.log("use internal response");
 						me.doAfterRejectedResponse(reject);
@@ -517,12 +644,12 @@ class authModal {
 			console.warn('aborded');
 			console.groupEnd();
 		}
-	}
-	doAfterSuccessResponse(){
-		console.warn('success');
+	},
+	doAfterSuccessResponse:function(){
+		console.log('success');
 		location.reload();	
-	}
-	doAfterRejectedResponse(response=""){
+	},
+	doAfterRejectedResponse:function(response=""){
 		console.groupCollapsed('doAfterRejectedResponse');
 		if(response.status){
 			console.warn('status:',response.status);
@@ -541,19 +668,31 @@ class authModal {
 			this.displayNotification({type:-1,title:"A problem at New User Registering",body:"<p>The following problems have occurred:</p>"+errorMessage});
 		}
 		console.groupEnd();
-	}
-	show(){
+	},
+	show:function(){
 		console.groupCollapsed('show');
+		this.modal.show();
+		console.groupEnd();
+	},
+	hide:function(){
+		console.groupCollapsed('hide');
+		this.modal.hide();
+		console.groupEnd();
+	},
+	open:function(){
+		console.groupCollapsed('open');
 		this.inputClear();
+		this.eye2PasswordToggle(-1);
 		this.displayNotificationUndo();
 		this.modal.show();
 		console.groupEnd();
-	}
-	hide(){
-		console.groupCollapsed('hide');
-		this.inputClear();
-		this.displayNotificationUndo();
+	},
+	close:function(){
+		console.groupCollapsed('close');
 		this.modal.hide();
+		this.inputClear();
+		this.eye2PasswordToggle(-1);
+		this.displayNotificationUndo();
 		console.groupEnd();
 	}
 }

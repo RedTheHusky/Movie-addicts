@@ -1,35 +1,44 @@
 let movies = new Movies();
-let modalElements={};
-let backgroundSync;
-modalLoad();
-backgroundSyncLoad();
+
+let modalElements={};let backgroundSync;let imageUploader;extraLoad();
+
 getMovies();
-function backgroundSyncLoad(){
+
+function extraLoad(){
+	console.groupCollapsed('extraLoad');
+	modalElements["notification"]= new Modal({root:"modalRoot",addModal2Root:true});
+	modalElements["submit"]= new movieModal({root:"modalRoot"});
+	modalElements["submit"].addModal2Root();
+	authModal.init({root:"modalRoot",addModal2Root:true,add2Head:true,addEvents:true});
+	modalElements["submit"].addEvents();
+	auth2Pages.init();
+	jokeSocialMediaCall.init({root:"modalRoot",addModal2Root:true,addEvents:true});
 	console.groupCollapsed('backgroundSyncLoad');
 	if(Worker){
+		if(location.protocol==="file:"||location.protocol==="file"){
+			console.warn('cannot do worker do to invalid protocol');
+			console.groupEnd();
+			return;
+		}
 		backgroundSync = new Worker('../workers/backgroundSync.js');
 		console.log('backgroundSync loaded');
 	}else{
 		console.warn('backgroundSync not loaded');
 	}
 	console.groupEnd();
-}
-function modalLoad(){
-	console.groupCollapsed('modalLoad');
+	console.groupCollapsed('imageUploaderLoad');
+	imageFileUploader.init();
+	if(document.querySelectorAll(".fileInput")){
+		document.querySelectorAll(".fileInput").forEach(function(element,i){
+			element.addEventListener("change", function(){
+				console.groupCollapsed('ileInput[',i,']');
+				imageFileUploader.fileUppload({event:event,element:element});
+				console.groupEnd();
+			});
+		});
+	}
 	
-	modalElements["notification"]= new Modal({root:"modalRoot",addModal2Root:true,});
-	modalElements["submit"]= new movieModal({root:"modalRoot"});
-	//modalElements["notification"].addModal2Root();
-	modalElements["submit"].addModal2Root();
-	modalElements["auth"]= new authModal({root:"modalRoot",addModal2Root:true,add2Head:true,addEvents:true});
-	//modalElements["auth"].addModal2Root();
-	//modalElements["auth"].add2Head();
-	//modalElements["auth"].displayLogIn();
-	modalElements["submit"].addEvents();
-	//modalElements["auth"].addEvents();
-	
-	//modalElements["submit"].modal.show();
-	//modalElements["submit"].displaySubmit();
+	console.groupEnd();
 	console.groupEnd();
 }
 function getMovies(skip) {
@@ -266,5 +275,48 @@ function doAfterFailedMovieEdit(options={}){
 		message=options.response;
 	}
 	displayNotification({mode:"error",title:"Failed update",message:"<p>Error at updating movie '"+options.obj.movie.Title+"'(" + options.obj.movie._id + ").</p><p>"+message+"</p>"});
+	console.groupEnd();
+}
+
+function doAfterSuccessConvertingImage2Base64(data={}){
+	console.groupCollapsed('doAfterFailedMovieEdit');
+	console.log("obj=",data.obj);
+	console.log("file=",data.file);
+	console.log("result.length=",data.result.length);
+	console.groupEnd();
+}
+
+/*function doAfterSuccessLogin(data={}){
+	console.groupCollapsed('doAfterSuccessLogin');
+	//location.reload();	
+	console.groupEnd();
+}
+function doAfterFailedLogin(data={}){
+	console.groupCollapsed('doAfterFailedLogin');	
+	console.groupEnd();
+}
+function doAfterSuccessRegister(data={}){
+	console.groupCollapsed('doAfterSuccessRegister');
+	//location.reload();	
+	console.groupEnd();
+}
+function doAfterFailedRegister(data={}){
+	console.groupCollapsed('doAfterFailedRegister');	
+	console.groupEnd();
+}*/
+
+function doAfterSuccessImageUpload(data={}){
+	console.groupCollapsed('doAfterSuccessImageUpload');
+	console.log('data=',data);
+	if(typeof data.response !="object"){
+		var obj = JSON.parse(data.response);
+		console.log('obj=',obj);
+		console.log('address=',obj.address);
+		modalElements["submit"].modal.modal.dom.querySelector('#newPoster').value=obj.address;
+	}else{
+		console.log('address=',data.response.address);
+		modalElements["submit"].modal.modal.dom.querySelector('#newPoster').value=data.response.address;
+	}
+	
 	console.groupEnd();
 }

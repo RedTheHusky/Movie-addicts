@@ -20,7 +20,7 @@ class movieModal {
 			this.root.id = options.root;
 			if(this.root.id){
 				this.root.dom=document.getElementById(this.root.id);
-				this.root.jquery=$('#'+this.modal.id); 
+				this.root.jquery=$('#'+this.root.id); 
 			}
 			if(options.addModal2Root){
 				this.addModal2Root();
@@ -49,13 +49,6 @@ class movieModal {
         <h4 class="modal-title">Edit movie</h4>
       </div>
       <div class="modal-body">
-			<div class='details'>
-				
-			</div>
-			<input class='fileInput' type="file" accept=".jpg, .jpeg, .png, .gif">
-			<div class='notification' style="display:none">
-
-			</div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger bt-close" data-dismiss="modal">Close</button>
@@ -67,6 +60,27 @@ class movieModal {
 
 		this.modal.content=content;
 		this.modal.addModal2Root();
+		let fields={ Title:'',Year:'',Runtime:'',Genre:'',Director:'',Writer:'',Actors:'',Plot:'',Language:'',Country:'',Poster:'',imdbRating:''};
+		let content_details="";
+		for (var key in fields){ //a for cycle that creates the titleLable,newLabel and so on elements
+			if(key==="Title"||key==="Year"||key==="Runtime"||key==="Director"||key==="Writer"||key==="Plot"||key==="Language"||key==="Poster"||key==="imdbRating"){
+				let value=fields[key];
+				if(key==="Poster"){
+					content_details+=`<div class='form-group submit-group'>
+				<label style="display:block" for="${key}" label${key}>${key}:</label>
+				<input id="new${key}" value="${value}" class="text-input form-control input${key}"></input>
+				<input class='fileInput' type="file" accept=".jpg, .jpeg, .png, .gif">
+				</div>`;	
+				}else{
+					content_details+=`<div class='form-group submit-group'>
+				<label style="display:block" for="${key}" label${key}>${key}:</label>
+				<input id="new${key}" value="${value}" class="text-input form-control input${key}"></input>
+				</div>`;
+				}
+				
+			}
+		}
+		this.modal.setElement([{selector:".modal-body", task:"inner", value:content_details}]);
 		console.groupEnd();
 	}
 	addEvents(){
@@ -98,9 +112,14 @@ class movieModal {
 					me.movie.editMovie().then(
 						function(response) {
 							console.log("Movie with id " + me.movie._id + " was succesfully updated");
-							if(doAfterSuccessfulMovieEdit){
-								console.log("trigger doAfterSuccessfulMovieEdit");
-								doAfterSuccessfulMovieEdit({obj:me,response:response});
+							if(typeof doAfterSuccessfulMovieEdit !=="undefined"){
+								console.log("trigger doAfterFailedMovieEdit");
+								try {
+									doAfterSuccessfulMovieEdit({obj:me,response:response});
+								}
+								catch(err) {
+									console.warn('error at function call:',err)
+								}
 							}
 						  //displayNotification({mode:"supdated",title:me.movie.Title,message:"Movie with id " + me.movie._id + " was succesfully updated."});
 						  //displayMovies();
@@ -117,9 +136,14 @@ class movieModal {
 							if(reject){
 								error.message=reject;
 							}
-							if(doAfterFailedMovieEdit){
+							if(typeof doAfterFailedMovieEdit !=="undefined"){
 								console.log("trigger doAfterFailedMovieEdit");
-								doAfterFailedMovieEdit({obj:me,response:reject});
+								try {
+									doAfterFailedMovieEdit({obj:me,response:reject});
+								}
+								catch(err) {
+									console.warn('error at function call:',err)
+								}
 							}
 							//displayNotification(error);
 						}
@@ -131,7 +155,7 @@ class movieModal {
 				console.groupEnd();
 			});
 		}
-		if(this.modal.modal.dom.querySelector(".fileInput")){
+		/*if(this.modal.modal.dom.querySelector(".fileInput")){
 			let me=this;
 			console.log('fileInput.register');
 			this.modal.modal.dom.querySelector(".fileInput").addEventListener("change", function(){
@@ -139,7 +163,7 @@ class movieModal {
 					me.fileuppload_triggered(this,me);
 				}
 			);
-		}
+		}*/
 		console.groupEnd();
 	}
 	displayAdd(options={}){
@@ -174,21 +198,16 @@ class movieModal {
 				response[key]=options.response[key]||"";	
 			}
 		}
-		let content_body="<spam>";
+		
 		for (var key in response){ //a for cycle that creates the titleLable,newLabel and so on elements
 			if(key==="Title"||key==="Year"||key==="Runtime"||key==="Director"||key==="Writer"||key==="Plot"||key==="Language"||key==="Poster"||key==="imdbRating"){
-				let value=response[key]||"";
-				content_body+=`<div class='form-group submit-group'>
-				<label style="display:block" for="${key}">${key}:</label>
-				<input id="new${key}" value="${value}" class="text-input form-control"></input>
-				</div>`;
+				this.modal.setElement([{selector:".input"+key, task:"attribute-add", name:"value",value:response[key]||""}]);
 			}
 		}
-		content_body+="</spam>";
 		console.groupEnd();
-		this.modal.setElement([{selector:".modal-title", task:"inner", value:"Edit movie: "+response["Title"]||""},{selector:".details", task:"inner", value:content_body}, "show"]);
+		this.modal.setElement([{selector:".modal-title", task:"inner", value:"Edit movie: "+response["Title"]||""}, "show"]);
 	}
-	fileuppload_triggered(event,me) {
+	/*fileuppload_triggered(event,me) {
 		console.groupCollapsed('fileuppload_triggered');
 	  //console.log('fileuppload_triggered');
 		var isError = false;
@@ -236,6 +255,5 @@ class movieModal {
 			isError = true;
 		}
 		console.groupEnd();
-	}
-	
+	}*/	
 }
