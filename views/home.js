@@ -1,11 +1,12 @@
 let movies = new Movies();
 
-let modalElements={};let alertElements={};let backgroundSync;let backgroundNotification;let imageUploader;extraLoad();
+let modalElements={};let alertElements={};let backgroundSync;let imageUploader;extraLoad();
 
 getMovies();
 function extraLoad(){
 	console.groupCollapsed('extraLoad');
 	console.groupCollapsed('notification');
+		notificationPopUp.init();
 		modalElements["notification"]= new Modal({root:"modalRoot",addModal2Root:true});
 		alertElements["notification"]= new Alert({root:"alertRoot",addModal2Root:true});
 		jokeSocialMediaCall.init({root:"modalRoot",addModal2Root:true,addEvents:true});
@@ -29,7 +30,6 @@ function extraLoad(){
 				return;
 			}
 			backgroundSync = new Worker('../workers/backgroundSync.js');
-			backgroundNotification = new Worker('../workers/backgroundNotification.js');
 			console.log('backgroundSync loaded');
 		}else{
 			console.warn('backgroundSync not loaded');
@@ -222,10 +222,7 @@ if(Worker&&backgroundSync){
 		if(event.data.display){
 			console.log("do display");
 			displayMovies();
-			if(backgroundNotification){
-				console.log("sending data to backgroundNotification");
-				backgroundNotification.postMessage({notification:{body:"Updated displayed movies."}});
-			}
+			notificationPopUp.post({body:"Updated displayed movies."});
 		}
 	console.groupEnd();   
 	}
@@ -325,24 +322,14 @@ function doAfterSuccessImageUpload(data={}){
 		console.log('obj=',obj);
 		console.log('address=',obj.address);
 		modalElements["submit"].modal.modal.dom.querySelector('#newPoster').value=obj.address;
-		if(Worker&&backgroundNotification){
-			console.log("sending data to backgroundNotification");
-			backgroundNotification.postMessage({notification:{body:"Image success uploaded",icon:obj.address}});
-		}
+		notificationPopUp.post({body:"Image successfully uploaded",icon:obj.address});
 	}else{
 		console.log('address=',data.response.address);
 		modalElements["submit"].modal.modal.dom.querySelector('#newPoster').value=data.response.address;
-		if(Worker&&backgroundNotification){
-			console.log("sending data to backgroundNotification");
-			backgroundNotification.postMessage({notification:{body:"Image success uploaded",icon:data.response.address}});
-		}
+		notificationPopUp.post({body:"Image successfully uploaded",icon:data.response.address});
 	}
 	
 	
 	console.groupEnd();
 }
-
-if(Worker&&backgroundNotification){
-	console.log("sending data to backgroundNotification");
-	backgroundNotification.postMessage({notification:{body:"Hi!"}});
-}
+notificationPopUp.post({body:"Hi"});
