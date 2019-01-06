@@ -175,16 +175,16 @@ let authModal={
       <div class="modal-body">
 			<div class='loginOrRegister'>
 				<div class='form-group'>
-					<input type="text" name="username" placeholder='Username' value="" autocomplete="username" class="text-input form-control inputKeyupCheck">
+					<input type="text" name="username" placeholder='Username' value="" autocomplete="username" class="username text-input form-control inputKeyupCheck">
 				</div>
 				<div class='form-group register-group' style="display:none">
-					<input type="text" name="email" placeholder='Email' value="" autocomplete="email" class="text-input form-control register-input inputKeyupCheck">
+					<input type="text" name="email" placeholder='Email' value="" autocomplete="email" class="email text-input form-control register-input inputKeyupCheck">
 				</div>
 				<div class='form-group' style="display:block">
-					<input type="password" name="password" value="" autocomplete="password" placeholder='Password' class="text-input form-control inputKeyupCheck" style="display:inline; width:90%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline;"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="20" width="20"></button>
+					<input type="password" name="password" value="" autocomplete="password" placeholder='Password' class="password text-input form-control inputKeyupCheck" style="display:inline; width:90%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline;"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="20" width="20"></button>
 				</div>
 				<div class='form-group register-group' style="display:none">
-					<input type="password" name="inputConfirmPassword" autocomplete="new-password" value="" placeholder='Retype your Password' class="text-input form-control register-input inputKeyupCheck" >
+					<input type="password" name="inputConfirmPassword" autocomplete="new-password" value="" placeholder='Retype your Password' class="confirm-password text-input form-control register-input inputKeyupCheck" >
 				</div>
 				<div class='form-group register-group' id="add_g-recaptcha_here_${this.id}" style="display:none">
 					
@@ -222,6 +222,7 @@ let authModal={
 		this.modal.modal.dom.querySelector('.modal-title').innerHTML="User Log In";
 		this.modal.modal.dom.querySelector('.bt-newuserOrback').innerHTML="New";
 		this.modal.modal.dom.querySelector('.bt-loginOrRegister').innerHTML="Log In";
+		this.modal.modal.dom.querySelector('.username').focus();
 		console.groupEnd();
 	},
 	displayRegister:function(){
@@ -252,6 +253,7 @@ let authModal={
 		this.modal.modal.dom.querySelector('.modal-title').innerHTML="New User Register";
 		this.modal.modal.dom.querySelector('.bt-newuserOrback').innerHTML="Back";
 		this.modal.modal.dom.querySelector('.bt-loginOrRegister').innerHTML="Register";
+		this.modal.modal.dom.querySelector('.username').focus();
 		console.groupEnd();
 	},
 	addEvents:function(){
@@ -337,6 +339,40 @@ let authModal={
 				me.eye2PasswordToggle(0);
 				console.groupEnd();
 			});
+		console.log("input enter -> focus")
+			this.modal.modal.dom.querySelector(".username").addEventListener("keyup",function(event){
+				if (event.keyCode === 13&&me.inputKeyupCheck({element:this,type:"name"})) {
+					console.log("enter_hit:correct");
+					if(me.profile.mode===2){
+						me.modal.modal.dom.querySelector(".email").focus();
+					}else{
+						me.modal.modal.dom.querySelector(".password").focus();
+					}
+				}
+			});
+			this.modal.modal.dom.querySelector(".password").addEventListener("keyup",function(event){
+				if (event.keyCode === 13&&me.inputKeyupCheck({element:this,type:"password"})) {
+					console.log("enter_hit:correct");
+					if(me.profile.mode===2){
+						me.modal.modal.dom.querySelector(".confirm-password").focus();
+					}else{
+						me.modal.modal.dom.querySelector(".bt-loginOrRegister").focus();
+					}
+				}
+			});
+			this.modal.modal.dom.querySelector(".email").addEventListener("keyup",function(event){
+				if (event.keyCode === 13&&me.inputKeyupCheck({element:this,type:"password"})) {
+					console.log("enter_hit:correct");
+					me.modal.modal.dom.querySelector(".password").focus();					
+				}
+			});
+			this.modal.modal.dom.querySelector(".confirm-password").addEventListener("keyup",function(event){
+				if (event.keyCode === 13&&me.inputKeyupCheck({element:this,type:"password"})) {
+					console.log("enter_hit:correct");
+					//me.modal.modal.dom.querySelector(".bt-loginOrRegister").focus();
+					//Google repatcha uses sandbox attribute, its iFrame cant be accessed by script :C
+				}
+			});
 		console.groupEnd();
 	},
 	eye2PasswordToggle:function(mode=0){
@@ -406,20 +442,21 @@ let authModal={
 	inputKeyupCheck:function(options={}){
 		//console.groupCollapsed('authModal@inputKeyupCheck');
 		//console.log('options:',options);
+		let result=true;
 		if(!options.element){
 			console.warn('invali');
 			console.groupEnd();
-			return;
+			return false;
 		}
 		if(options.type){
 			if(options.type==='name'){
 				if(options.element.value.length<this.settings.nameLength_min){
 					//console.warn('name to small');
-					options.element.classList.add(this.settings.classList.invalid);
+					options.element.classList.add(this.settings.classList.invalid);result=false;
 				}else
 				if(options.element.value.length>this.settings.nameLength_max){
 					//console.warn('name to big');
-					options.element.classList.add(this.settings.classList.invalid);
+					options.element.classList.add(this.settings.classList.invalid);result=false;
 				}else{
 					options.element.classList.remove(this.settings.classList.invalid);
 				}
@@ -427,11 +464,11 @@ let authModal={
 			if(options.type==='password'){
 				if(options.element.value.length<this.settings.passwordLength_min){
 					//console.warn('password to small');
-					options.element.classList.add(this.settings.classList.invalid);
+					options.element.classList.add(this.settings.classList.invalid);result=false;
 				}else
 				if(options.element.value.length>this.settings.passwordLength_max){
 					//console.warn('password to big');
-					options.element.classList.add(this.settings.classList.invalid);
+					options.element.classList.add(this.settings.classList.invalid);result=false;
 				}else{
 					options.element.classList.remove(this.settings.classList.invalid);
 				}
@@ -439,13 +476,14 @@ let authModal={
 			if(options.type==='email'){
 				if(!this.validateEmail(options.element.value)){
 					//console.warn('invalid email');
-					options.element.classList.add(this.settings.classList.invalid);
+					options.element.classList.add(this.settings.classList.invalid);result=false;
 				}else{
-					options.element.classList.remove(this.settings.classList.invalid);
+					options.element.classList.remove(this.settings.classList.invalid);result=false;
 				}
 			}
 		}
 		//console.groupEnd();
+		return result;
 	},
 	validateEmail:function(email) {
 		console.groupCollapsed('authModal@validateEmail');
@@ -706,6 +744,12 @@ let authModal={
 	show:function(){
 		console.groupCollapsed('authModal@show');
 		this.modal.show();
+		let me=this;
+		setTimeout(function(){
+			console.log('focus');
+			me.modal.modal.dom.querySelector('.username').focus();
+		}, 500);
+		
 		console.groupEnd();
 	},
 	hide:function(){
