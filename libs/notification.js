@@ -16,6 +16,11 @@ let notificationPopUp={
 	},
 	post:function(data={}) {
 		console.groupCollapsed('post');
+		if (!("Notification" in window)) {
+			console.warn("This browser does not support desktop notification");
+			console.groupEnd();
+			return;
+		}
 		this.called++;
 		console.log('data=',data);
 		console.log('defaultNotificationData=',this.defaultNotificationData);
