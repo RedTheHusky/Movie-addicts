@@ -29,7 +29,7 @@ function extraLoad(){
 				console.groupEnd();
 				return;
 			}
-			backgroundSync = new Worker('../workers/backgroundSync.min.js');
+			backgroundSync = new Worker('../workers/backgroundSync.js');
 			console.log('backgroundSync loaded');
 		}else{
 			console.warn('backgroundSync not loaded');
@@ -258,7 +258,7 @@ function displayNotification(options={}){
 	console.log("options=",options);
 	let title=options.title||"(unknown)";
 	let message=options.message||"(unknown)";
-	if(!(modalElements["submit"].modal.modal.dom.getAttribute("style")==null||modalElements["submit"].modal.modal.dom.getAttribute("style").includes("display: none"))){
+	if(!(modalElements["submit"].modal.main.dom.getAttribute("style")==null||modalElements["submit"].modal.main.dom.getAttribute("style").includes("display: none"))){
 		console.warn("Display !=none, trying to change display.");
 		modalElements["submit"].modal.hide();
 	}
@@ -321,11 +321,11 @@ function doAfterSuccessImageUpload(data={}){
 		var obj = JSON.parse(data.response);
 		console.log('obj=',obj);
 		console.log('address=',obj.address);
-		modalElements["submit"].modal.modal.dom.querySelector('#newPoster').value=obj.address;
+		modalElements["submit"].modal.main.dom.querySelector('#newPoster').value=obj.address;
 		notificationPopUp.post({body:"Image successfully uploaded",icon:obj.address});
 	}else{
 		console.log('address=',data.response.address);
-		modalElements["submit"].modal.modal.dom.querySelector('#newPoster').value=data.response.address;
+		modalElements["submit"].modal.main.dom.querySelector('#newPoster').value=data.response.address;
 		notificationPopUp.post({body:"Image successfully uploaded",icon:data.response.address});
 	}
 	

@@ -85,10 +85,10 @@ class movieModal {
 	}
 	addEvents(){
 		console.groupCollapsed('addEvents');
-		if(this.modal.modal.dom.querySelector(".bt-save")){
+		let me=this;
+		if(this.modal.main.dom.querySelector(".bt-save")){
 			console.log('bt-save.register');
-			let me=this;
-			this.modal.modal.dom.querySelector(".bt-save").addEventListener("click", function(){
+			this.modal.main.dom.querySelector(".bt-save").addEventListener("click", function(){
 				console.groupCollapsed('btn_save-click');
 				me.modal.hide();
 				if(me.mode==="new"){
@@ -158,15 +158,21 @@ class movieModal {
 				console.groupEnd();
 			});
 		}
-		/*if(this.modal.modal.dom.querySelector(".fileInput")){
+		/*if(this.modal.main.dom.querySelector(".fileInput")){
 			let me=this;
 			console.log('fileInput.register');
-			this.modal.modal.dom.querySelector(".fileInput").addEventListener("change", function(){
+			this.modal.main.dom.querySelector(".fileInput").addEventListener("change", function(){
 				console.groupCollapsed('fileInput-click');
 					me.fileuppload_triggered(this,me);
 				}
 			);
 		}*/
+		console.log("form events");
+		this.modal.main.jquery.on('hidden.bs.modal', function(){
+			console.log('Modal cleared if it contains a form');
+			me.modal.main.dom.querySelectorAll(".text-input").forEach(function(e,i){e.value="";});
+			$(this).find('form')[0].reset();
+		});
 		console.groupEnd();
 	}
 	displayAdd(options={}){
@@ -219,7 +225,7 @@ class movieModal {
 		console.log('event=',event);
 		console.log('this=',this);
 		console.log('me=',me);
-		let input=me.modal.modal.dom.querySelector(".fileInput");
+		let input=me.modal.main.dom.querySelector(".fileInput");
 		//var $i = $( '.fileInput' ), 
 		//input = $i[0]; 
 		console.log('input=',me);
