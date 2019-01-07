@@ -13,7 +13,7 @@ function extraLoad(){//added by Tamas
 			console.groupEnd();
 			return;
 		}
-		backgroundSync = new Worker('../workers/backgroundSync.js');
+		backgroundSync = new Worker('../workers/backgroundSync.min.js');
 		console.log('backgroundSync loaded');
 	}else{
 		console.warn('backgroundSync not loaded');
