@@ -1,10 +1,8 @@
 var movie = new Movie();
-var backgroundSync;var modalElements={};extraLoad();//added by Tamas
+var backgroundSync;extraLoad();//added by Tamas
 function extraLoad(){//added by Tamas
 	console.groupCollapsed('extraLoad');
-	modalElements["notification"]= new Modal({root:"modalRoot"});
-	modalElements["notification"].addModal2Root();
-	authModal.init({root:"modalRoot",addModal2Root:true,add2Head:true,addEvents:true});
+	authModal.init({root:"#modalRoot",add2Root:true,add2Head:true,addEvents:true});
 	auth2Pages.init();
 	console.groupCollapsed('backgroundSyncLoad');
 	if(Worker){
@@ -54,7 +52,10 @@ function displayMovie() {
   $(".movie-country").html(movie.Country);
 
   $(".movie-imdbRating").html(movie.imdbRating);
-	if(Worker&&backgroundSync){
+
+
+
+  if(Worker&&backgroundSync){//added by Tamas
 		console.log("sending data to backgroundSync");
 		backgroundSync.postMessage({
 			mode:2,
@@ -79,7 +80,6 @@ function displayMovie() {
 			timer:{command:'start'}}
 		);
 	}
-		
 }
 
 function getUrlParameter(name) {
@@ -90,14 +90,7 @@ function getUrlParameter(name) {
     ? ""
     : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
-
-function doStats(){
-	if(Worker&&backgroundSync){
-		console.log("sending data to backgroundSync");
-		backgroundSync.postMessage({get:"stats"});
-	}
-}
-if(Worker&&backgroundSync){
+if(Worker&&backgroundSync){ //added by Tamas
 	console.log("receiving data to backgroundSync");
 	backgroundSync.onmessage = function(event) {
 		console.groupCollapsed('backgroundSync.onmessage');
@@ -128,3 +121,4 @@ if(Worker&&backgroundSync){
 		console.groupEnd();   
 	}
 }
+

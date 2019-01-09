@@ -1,173 +1,283 @@
-let movies = new Movies();
 
-let modalElements={};let alertElements={};let backgroundSync;let imageUploader;extraLoad();
+// window.onload = function() {
+//   var movie = new Movie();
+//   movie.regenerateMovies().then(function(response) {
+//     console.log("Complet regeneration", response);
+//   });
+// };
+
+var movies = new Movies();
+let modalElements={};let alertElements={};let backgroundSync;extraLoad();//added by Tamas
+function extraLoad(){ //added by Tamas
+  //here it loads the blank modal & alert notification, but also the components for authentication, image uploading and background sysnc
+  console.groupCollapsed('extraLoad');
+  console.log('notification');
+  modalElements["notification"]= new Modal({root:"#modalRoot",add2Root:true});
+  alertElements["notification"]= new Alert({root:"#alertRoot",add2Root:true});
+  jokeSocialMediaCall.init({root:"modalRoot",add2Root:true,addEvents:true});
+  notificationPopUp.init();
+  console.log('auth');
+  authModal.init({root:"#modalRoot",add2Root:true,add2Head:true,addEvents:true});
+  authAlert=new Alert({root:"#alertRoot",add2Root:true});
+  auth2Pages.init();
+	console.log('submit');
+	movieSubmitFormModal.init({root:"#modalRoot"});
+	movieSubmitFormModal.add2Root();
+	movieSubmitFormModal.addEvents();
+	console.log('dynamicSearchBarList');
+	dynamicSearchBarList.init({root:"#searchDiv",add2Root:true});
+	//dynamicSearchBarList.setDropDownToggle("#search-btn");
+	dynamicSearchBarList.setInputEvent("input[name='search']");															 
+  console.log('backgroundSyncLoad');
+  if(Worker){
+    if(location.protocol==="file:"||location.protocol==="file"){
+      console.warn('cannot do worker do to invalid protocol');
+      console.groupEnd();
+      return;
+    }
+    backgroundSync = new Worker('../workers/backgroundSync.js');
+    console.log('backgroundSync loaded');
+  }else{
+    console.warn('backgroundSync not loaded');
+  }
+  
+  console.log('imageUploaderLoad');
+  imageFileUploader.init();
+  if(document.querySelectorAll(".fileInput")){
+	document.querySelectorAll(".fileInput").forEach(function(element,i){
+		element.addEventListener("change", function(){
+			console.groupCollapsed('ileInput[',i,']');
+			imageFileUploader.fileUppload({event:event,element:element});
+			console.groupEnd();
+		});
+	});
+}
+  console.log('ect');
+  console.groupEnd();
+}
 
 getMovies();
-function extraLoad(){
-	console.groupCollapsed('extraLoad');
-	console.groupCollapsed('notification');
-		notificationPopUp.init();
-		modalElements["notification"]= new Modal({root:"modalRoot",addModal2Root:true});
-		alertElements["notification"]= new Alert({root:"alertRoot",addModal2Root:true});
-		jokeSocialMediaCall.init({root:"modalRoot",addModal2Root:true,addEvents:true});
-		googleCalendarRender.init({root:"modalRoot",addModal2Root:true,add2Head:true});
-	console.groupEnd();
-	console.groupCollapsed('auth');
-		authModal.init({root:"modalRoot",addModal2Root:true,add2Head:true,addEvents:true});
-		authAlert=new Alert({root:"alertRoot",addAlert2Root:true});
-		auth2Pages.init();
-	console.groupEnd();
-	console.groupCollapsed('submit');
-		modalElements["submit"]= new movieModal({root:"modalRoot"});
-		modalElements["submit"].addModal2Root();
-		modalElements["submit"].addEvents();
-	console.groupEnd();
-	console.groupCollapsed('backgroundSyncLoad');
-		if(Worker){
-			if(location.protocol==="file:"||location.protocol==="file"){
-				console.warn('cannot do worker do to invalid protocol');
-				console.groupEnd();
-				return;
-			}
-			backgroundSync = new Worker('../workers/backgroundSync.js');
-			console.log('backgroundSync loaded');
-		}else{
-			console.warn('backgroundSync not loaded');
-		}
-		
-	console.groupEnd();
-	console.groupCollapsed('imageUploaderLoad');
-		imageFileUploader.init();
-		if(document.querySelectorAll(".fileInput")){
-			document.querySelectorAll(".fileInput").forEach(function(element,i){
-				element.addEventListener("change", function(){
-					console.groupCollapsed('ileInput[',i,']');
-					imageFileUploader.fileUppload({event:event,element:element});
-					console.groupEnd();
-				});
-			});
-		}
-	console.groupEnd();
-	//googleCalendarRender.showModal();
-	console.groupEnd();
-}
 function getMovies(skip) {
   movies.getAll(skip).then(function() {
     console.log("getAllList", movies.items);
-	if(Worker&&backgroundSync){
-		console.log("sending data to backgroundSync");
-		backgroundSync.postMessage({mode:1,movies:{skip:skip}});
-	}
-   displayMovies();
-   displayPagination();
-
+  if(Worker&&backgroundSync){ //added by Tamas
+    console.log("sending data to backgroundSync");
+    backgroundSync.postMessage({mode:1,movies:{skip:skip}});
+  }
+    displayMovies(movies.items);
+    displayPagination(movies.pagination);
+    searchYear();
+    searchGenre();
   });
-console.groupEnd();
 }
-jQuery.loadScript = function (url, callback_s,callback_f) {
-    return jQuery.ajax({
-        url: url,
-        dataType: 'script',
-        success: callback_s,
-		fail: callback_f,
-        async: true
+
+function displayMovies(response) {
+  console.log("displayMovies");
+  var template = document.getElementById("template");
+  if(Auth.getAccessToken()){
+    template.querySelector(".movie-edit").removeAttribute("style");
+    template.querySelector(".movie-delete").removeAttribute("style");
+  }else{
+    template.querySelector(".movie-edit").style.display="none";
+    template.querySelector(".movie-delete").style.display="none";
+  }
+  var moviesContainer = document.getElementById("movies");
+  moviesContainer.innerHTML = "";
+  // var regenerateMoviesContainer = document.getElementById("regenerate-movies");
+  console.log("display movies response=", response);
+  for (let i = 0; i < response.length; i++) {
+    var moviesClone = template.cloneNode(true);
+    // set a unique id for each movie
+    moviesClone.id = "movie_" + response[i]._id;
+    moviesClone.classList.add('new-movie');
+    // populate the cloned template
+    var movieTitleElement = moviesClone.querySelector(".movie-title");
+    movieTitleElement.innerHTML = response[i].Title;
+
+    var movieYearElement = moviesClone.querySelector(".movie-year");
+    movieYearElement.innerHTML = response[i].Year;
+
+    var movieRuntimeElement = moviesClone.querySelector(".movie-runtime");
+    movieRuntimeElement.innerHTML = response[i].Runtime;
+
+    var movieGenreElement = moviesClone.querySelector(".movie-genre");
+    movieGenreElement.innerHTML = response[i].Genre;
+
+    var moviePosterElement = moviesClone.querySelector(".movie-poster");
+    moviePosterElement.src = response[i].Poster;
+
+    var getMovieDetailsButton = moviesClone.querySelector(".movie-details");
+    let id=response[i]._id;
+    let me=response[i];
+    getMovieDetailsButton.addEventListener(
+      "click",
+      function getMovieDetailsOnClick() {
+
+        window.location = "movieDetails.html?_id=" + id;
+      });
+    moviesClone.style.display="initial";
+    moviesContainer.appendChild(moviesClone);
+
+
+    let editButton = moviesClone.querySelector(".movie-edit");
+    editButton.addEventListener("click", function(){
+        editMovie(me);
+      
     });
-}
-var url_to_someScript='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js';
-if (typeof someObject == 'undefined') $.loadScript(url_to_someScript, 
-	function(r){
-	   console.groupCollapsed('loadScript['+url_to_someScript+']');
-	   console.log('r=',r);
-	   console.groupEnd();   
-	},
-	function (f){
-		console.groupCollapsed('loadScript_failed['+url_to_someScript+']');
-		 console.groupEnd();   
-	}
-);
-function displayMovies() {
-	console.groupCollapsed('displayMovies');
-	var template = document.getElementById("template");
-	var moviesContainer = document.getElementById("movies");
-	moviesContainer.innerHTML = "";
-	// var regenerateMoviesContainer = document.getElementById("regenerate-movies");
-	console.log("display movies.items=", movies.items);
-	if(movies.items) //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach
-	movies.items.forEach(function(movie,index){//element, index
-		console.groupCollapsed('movie[',index,']');
-		console.log('movie=',movie);
-		var moviesClone = template.cloneNode(true);
-		// set a unique id for each movie
-		moviesClone.id = "movie_" + movie._id;
-		// populate the cloned template
-		moviesClone.querySelector(".movie-title").innerHTML = movie.Title;
 
-		moviesClone.querySelector(".movie-year").innerHTML = movie.Year;
 
-		moviesClone.querySelector(".movie-runtime").innerHTML = movie.Runtime;
+    let deleteButton = moviesClone.querySelector(".movie-delete");
+    deleteButton.addEventListener("click", function(){
+      deleteMovieOnClick(me,i);
+    });
 
-		moviesClone.querySelector(".movie-genre").innerHTML = movie.Genre;
+    
 
-		moviesClone.querySelector(".movie-poster").src = movie.Poster;
+  };
 
-		moviesClone.querySelector(".movie-details").addEventListener(
-		  "click",
-		  function getMovieDetailsOnClick() {
+  if(Worker&&backgroundSync){//added by Tamas
+    console.log("sending data to backgroundSync");
+    backgroundSync.postMessage({mode:1,movies:{items:movies.items,pagination:movies.pagination},timer:{command:'start'}});
+  }
 
-			window.location = "movieDetails.html?_id=" + movie._id;
-		  });
-		moviesClone.style.display="initial";
-		moviesContainer.appendChild(moviesClone);
-		if(!movie.getMovie){
-			console.warn("No movie.getMovie!");
-		}
-		moviesClone.querySelector(".movie-edit").addEventListener("click", function(){
-		  event.target.disabled = "true";
-		  editMovie(movie);
-		  event.target.disabled = false;
-		});
-		moviesClone.querySelector(".movie-delete").addEventListener("click", function(){
-			deleteMovieOnClick(movie,index);
-		});
-		console.groupEnd(); 
-	});
-	 
-	if(Worker&&backgroundSync){
-		console.log("sending data to backgroundSync");
-		backgroundSync.postMessage({mode:1,movies:{items:movies.items,pagination:movies.pagination},timer:{command:'start'}});
-	}
-	console.groupEnd();   
 };
 
-
-function displayPagination() {
+function displayPagination(response) {
+  //console.log("response pagination", response)
   var templatePages = document.getElementById("pagination-template");
   var pagesContainer = document.getElementById("pagination");
   pagesContainer.innerHTML = "";
-  for ( let i=1; i<= movies.pagination.numberOfPages; i++) {
+  for ( let i=1; i<= response.numberOfPages; i++) {
     var pagesClone = templatePages.cloneNode(true);
+    pagesClone.removeAttribute("style");
+    pagesClone.removeAttribute("id");
     var pageButtonElement = pagesClone.querySelector(".pages-btn");
     pageButtonElement.innerHTML = i;
     pagesContainer.appendChild(pagesClone);
-	pagesClone.style.display="initial";
-	pagesClone.removeAttribute("id");
     pageButtonElement.addEventListener("click",function moveToPage(event){
       return getMovies((i-1)*10 +1);
     });
   }
 }
 
+// ALEXXXXXXX Search
+var inputText = document.querySelector("[name=search]");
+var searchSelected = document.querySelector(".search-select");
+var searchBtn = document.getElementById('search-btn');
+  searchBtn.addEventListener("click", searchMovie);
+
+function searchMovie() {
+  // var searchSelectedValue = searchSelected.value;
+  var inputTextValue = inputText.value;
+  console.log("SEARCH BUTTON");
+  if (inputTextValue) {
+    removeTemplateMovies();
+    movies.getAll(10, 0, inputTextValue).then(function () {
+      displayMovies(movies.items);
+    });
+  } else {
+    removeTemplateMovies();
+    movies.getAll(10, 0).then(function () {
+      displayMovies(movies.items);
+    });
+  }}
+
+  function removeTemplateMovies() {
+    var movieDiv = document.getElementsByClassName('new-movie');
+    while (movieDiv[0]) {
+      movieDiv[0].parentNode.removeChild(movieDiv[0]);
+    }
+  }
+///////////////////////////////////// Search Year
+
+function searchYear() {
+  var yearDiv = document.getElementById('searchDivYear');
+  var buttonYearMin = document.createElement('button');
+  var buttonYearMed = document.createElement('button');
+  var buttonYearMax = document.createElement('button');
+  var textButtonYearMin = document.createTextNode("Year < 2000");
+  var textButtonYearMed = document.createTextNode("2000 - 2010");
+  var textButtonYearMax = document.createTextNode("2010 < Year");
+  buttonYearMin.appendChild(textButtonYearMin);
+  buttonYearMin.addEventListener('click', function(){
+    console.log("Year MIN clicked");
+  })
+  buttonYearMed.appendChild(textButtonYearMed);
+  buttonYearMed.addEventListener('click', function(){
+    console.log("Year MED clicked");
+  })
+  buttonYearMax.appendChild(textButtonYearMax);
+  buttonYearMax.addEventListener('click', function(){
+    console.log("Year MAX clicked");
+  })
+  yearDiv.appendChild(buttonYearMin);
+  yearDiv.appendChild(buttonYearMed);
+  yearDiv.appendChild(buttonYearMax);
+  
+}
+///////////////////////////////////// Search Genre
+
+function searchGenre() {
+  var responseMovies = movies.items;
+  var moviesGenre = []; // String Genre Array
+  console.log("SEARCHHHHHHHHHH ", movies.items);
+  
+  for (let i=0; i<responseMovies.length; i++) {
+    var responseMoviesGenre = responseMovies[i].Genre;
+    getGenre();
+    function getGenre(){
+      var genreStringArray = responseMoviesGenre.split(", ");
+      for(let i=0; i<genreStringArray.length;i++) {
+        var genreString = genreStringArray[i];
+        moviesGenre.push(genreString);
+      }
+    }
+  }
+  
+  var genreObj = {};
+  var genreArr = [];
+  for (let i = 0; i < moviesGenre.length; i++) {
+    if (!(moviesGenre[i] in genreObj)) {
+      genreArr.push(moviesGenre[i]);
+      genreObj[moviesGenre[i]] = true;
+    }
+  }
+  
+  for (let i=0; i<genreArr.length; i++) { 
+    var singleGenre = genreArr[i]; //
+    function addButtonGenre(singleGenre) {
+    var genreDiv = document.getElementById('searchDivGenre'); // div pentru butoane
+    var genreButton = document.createElement('button'); // creare buton
+    var textButton = document.createTextNode(singleGenre); // nume buton (gen)
+    genreButton.appendChild(textButton);
+    genreDiv.appendChild(genreButton);
+  
+    genreButton.addEventListener("click", function() { // functie buton
+        console.log("Genre button", singleGenre);
+    });
+  }
+  
+  addButtonGenre(singleGenre);
+  }
+
+
+}
+//////////////////////ALEXXXXXXXXXXXX
+
 function editMovie(movie){
-	console.log("editMovie.movie=",movie);
+   console.log("editMovie.movie=",movie);
     movie.getMovie().then(
 		function(response) {
 			console.log("success getMovie");
 			console.log("response=",response);
-			modalElements["submit"].displayEdit({response:response,movie:movie});
-			//displaySubmitt({mode:"edit",response:response,movie:movie});
+			movieSubmitFormModal.displayEdit({response:response,movie:movie});
 		}
 	);
 }
+
+
+
+
 
 function getMovieById(event) {
   var theMovie = event.target.parentNode.parentNode;
@@ -180,156 +290,96 @@ function getMovieById(event) {
 }
 
 
-function deleteMovieOnClick(movie,positionInItems){ 
-	movie.deleteMovie().then(function(response){
-		console.log("display", response);
-		movies.items.splice(positionInItems, 1);
-		displayMovies();
-	});
+function deleteMovieOnClick(movie,positionInItems){
+  
+movie.deleteMovie().then(function(response){
+ console.log("display", response);
+ movies.items.splice(positionInItems, 1);
+ displayMovies(movies.items);
+});
 }
 
+function doAfterSuccessLogin(data={}){//added by Tamas, will run this function after successful log in
+  console.groupCollapsed('doAfterSuccessLogin');
+  displayEditButtons();
+  console.groupEnd();
+}
+function doAfterSuccessRegister(data={}){//added by Tamas, will run this function after successful register
+  console.groupCollapsed('doAfterSuccessRegister');
+  displayEditButtons();
+  console.groupEnd();
 
-
-function doStats(){
-	if(Worker&&backgroundSync){
-		console.log("sending data to backgroundSync");
-		backgroundSync.postMessage({get:"stats"});
-	}
 }
-if(Worker&&backgroundSync){
-	console.log("receiving data to backgroundSync");
-	backgroundSync.onmessage = function(event) {
-		console.groupCollapsed('backgroundSync.onmessage');
-		console.log("event:",event);
-		console.log("data:",event.data);
-		if(event.data.update){
-			if(event.data.update.items){
-				console.log("updated movies.items");
-				if(event.data.update.items.length){
-					movies.items=[];
-					event.data.update.items.forEach(function(item,index){
-						var movie = new Movie(item);
-						movies.items.push(movie);
-					});
-				}
-				
-			}
-			if(event.data.update.pagination){
-				console.log("updated movies.pagination");
-				movies.pagination=event.data.update.pagination;
-			}
-		}else
-		if(event.data.display){
-			console.log("do display");
-			displayMovies();
-			notificationPopUp.post({body:"Updated displayed movies."});
-		}
-	console.groupEnd();   
-	}
+function doAfterSuccessLogOut(data={}){//added by Tamas, will run this function after successful log out
+  console.groupCollapsed('doAfterSuccessLogOut'); 
+  hideEditButtons();
+  console.groupEnd();
 }
-
-
-function displaySubmitt(options={}){
-	console.groupCollapsed('displaySubmitt');
-	
-	let movie='';
-	let response={ Title:'',Year:'',Runtime:'',Genre:'',Director:'',Writer:'',Actors:'',Plot:'',Language:'',Country:'',Poster:'',imdbRating:''};
-	if(options.response){ //!!!need to talk about the Movie.getMovie functionality for improvement
-		response=options.response;
-	}
-	if(options.movie){
-		modalElements["submit"].movie=options.movie;
-	}
-	modalElements["submit"].mode=options.mode||"";
-
-	let content_body="<spam>";
-	for (var key in response){ //a for cycle that creates the titleLable,newLabel and so on elements
-		if(key==="Title"||key==="Year"||key==="Runtime"||key==="Director"||key==="Writer"||key==="Plot"||key==="Language"||key==="Poster"||key==="imdbRating"){
-			let value=response[key]||"";
-			content_body+=`<label style="display:block" for="${key}">${key}:</label><input id="new${key}" value="${value}" style="width: 90%"></input>`;
-		}
-	}
-	content_body+="</spam>";
-	modalElements["submit"].setElement([{selector:".modal-title", task:"inner", value:"Edit movie: "+response["Title"]||""},{selector:".modal-body", task:"inner", value:content_body}, "show"]);
-	console.groupEnd();
+function displayEditButtons(){
+  document.querySelectorAll(".movie-delete").forEach(function(buttons){buttons.removeAttribute("style")});
+  document.querySelectorAll(".movie-edit").forEach(function(buttons){buttons.removeAttribute("style")});
 }
-function displayNotification(options={}){
-	console.groupCollapsed('displayNotification')
-	console.log("options=",options);
-	let title=options.title||"(unknown)";
-	let message=options.message||"(unknown)";
-	if(!(modalElements["submit"].modal.main.dom.getAttribute("style")==null||modalElements["submit"].modal.main.dom.getAttribute("style").includes("display: none"))){
-		console.warn("Display !=none, trying to change display.");
-		modalElements["submit"].modal.hide();
-	}
-	modalElements["notification"].addModal2Root();
-	modalElements["notification"].setElement([{selector:".modal-title", task:"inner", value:title},{selector:".modal-body", task:"inner", value:message}, "show"]);
-	console.groupEnd();
+function hideEditButtons(){
+  console.log("hide");
+  document.querySelectorAll(".movie-delete").forEach(function(buttons){buttons.style.display="none";});
+  document.querySelectorAll(".movie-edit").forEach(function(buttons){buttons.style.display="none";});
 }
-
-function doAfterSuccessfulMovieEdit(options={}){
-	console.groupCollapsed('doAfterSuccessfulMovieEdit');
-	displayNotification({mode:"supdated",title:"Updated successfully",message:"<p>Movie '"+options.obj.movie.Title+"' (" + options.obj.movie._id + ") was successfully updated.</p>"});
-	displayMovies();
-	console.groupEnd();
+function doAfterSuccessImageUpload(data={}){//added by Tamas, will run this function after successful imate upload
+  console.groupCollapsed('doAfterSuccessImageUpload');
+  console.log('data=',data);
+  //the data will contain information to the address of uploaded image
+  //do to server side, the resposne might not be a json
+  if(typeof data.response !="object"){
+    //conver the result if not json
+    var obj = JSON.parse(data.response);
+    console.log('obj=',obj);
+    console.log('address=',obj.address);
+    //now we got the address of the image saved in obj.address
+    notificationPopUp.post({body:"Image successfully uploaded",icon:obj.address});
+    if(document.querySelector(".inputPoster")){
+      document.querySelector(".inputPoster").value=obj.address;
+    }
+  }else{
+    //we got the address of the image saved in data.response.address
+    console.log('address=',data.response.address);
+    notificationPopUp.post({body:"Image successfully uploaded",icon:data.response.address});
+	if(document.querySelector(".inputPoster")){
+      document.querySelector(".inputPoster").value=data.response.address;;
+    }
+  }
+  
+  console.groupEnd();
 }
-
-function doAfterFailedMovieEdit(options={}){
-	console.groupCollapsed('doAfterFailedMovieEdit');
-	let message;
-	if(options.response.responseJSON&&options.response.responseJSON.message){
-		message=options.response.responseJSON.message;
-	}else
-	if(options.response.response&&options.response.response){
-		message=options.response.response;
-	}else
-	if(options.response&&options.response.respons){
-		message=options.response;
-	}
-	displayNotification({mode:"error",title:"Failed update",message:"<p>Error at updating movie '"+options.obj.movie.Title+"'(" + options.obj.movie._id + ").</p><p>"+message+"</p>"});
-	console.groupEnd();
+if(Worker&&backgroundSync){ //added by Tamas, allows page to refresh its movies if it changed on the database
+  //not tested it with search attributes
+  console.log("receiving data to backgroundSync");
+  backgroundSync.onmessage = function(event) {
+    console.groupCollapsed('backgroundSync.onmessage');
+    console.log("event:",event);
+    console.log("data:",event.data);
+    if(event.data.update){
+      if(event.data.update.items){
+        console.log("updated movies.items");
+        if(event.data.update.items.length){
+          movies.items=[];
+          event.data.update.items.forEach(function(item,index){
+            var movie = new Movie(item);
+            movies.items.push(movie);
+          });
+        }
+        
+      }
+      if(event.data.update.pagination){
+        console.log("updated movies.pagination");
+        movies.pagination=event.data.update.pagination;
+      }
+    }else
+    if(event.data.display){
+      console.log("do display");
+      displayMovies(movies.items);
+      displayPagination(movies.pagination);
+      notificationPopUp.post({body:"Updated displayed movies."});
+    }
+  console.groupEnd();   
+  }
 }
-
-function doAfterSuccessConvertingImage2Base64(data={}){
-	console.groupCollapsed('doAfterFailedMovieEdit');
-	console.log("obj=",data.obj);
-	console.log("file=",data.file);
-	console.log("result.length=",data.result.length);
-	console.groupEnd();
-}
-
-function doAfterSuccessLogin(data={}){
-	console.groupCollapsed('doAfterSuccessLogin');
-	//location.reload();	
-	console.groupEnd();
-}
-function doAfterSuccessRegister(data={}){
-	console.groupCollapsed('doAfterSuccessRegister');
-	//location.reload();	
-	console.groupEnd();
-}
-function doAfterSuccessLogOut(data={}){
-	console.groupCollapsed('doAfterSuccessLogOut');	
-	//location.reload();
-	console.groupEnd();
-}
-
-function doAfterSuccessImageUpload(data={}){
-	console.groupCollapsed('doAfterSuccessImageUpload');
-	console.log('data=',data);
-	if(typeof data.response !="object"){
-		var obj = JSON.parse(data.response);
-		console.log('obj=',obj);
-		console.log('address=',obj.address);
-		modalElements["submit"].modal.main.dom.querySelector('#newPoster').value=obj.address;
-		notificationPopUp.post({body:"Image successfully uploaded",icon:obj.address});
-	}else{
-		console.log('address=',data.response.address);
-		modalElements["submit"].modal.main.dom.querySelector('#newPoster').value=data.response.address;
-		notificationPopUp.post({body:"Image successfully uploaded",icon:data.response.address});
-	}
-	
-	
-	console.groupEnd();
-}
-notificationPopUp.post({body:"Hi"});

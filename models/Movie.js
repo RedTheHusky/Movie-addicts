@@ -97,10 +97,3 @@ Movie.prototype.regenerateMovies = function() {
 };
 
 
-// Movie.prototype.regenerateMovies = function() {
-//   return $.ajax({
-//     url: rootUrl + "regenerate-movies",
-//     method: "GET"
-//   });
-// };
-

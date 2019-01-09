@@ -429,7 +429,7 @@ function addEvents(){
 function init(){
 	console.groupCollapsed('init');
 	profile.protocol=location.protocol;
-	modalNotification= new Modal({root:"modalRoot",addModal2Root:true,});
+	modalNotification= new Modal({root:"modalRoot",add2Root:true,});
 	addEvents();
 	console.groupEnd();
 }

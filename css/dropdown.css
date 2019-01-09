@@ -1,0 +1,39 @@
+.dropdown-fallback {
+  label {
+    position: relative;
+    overflow: visible;
+
+    &:focus {
+      outline: 0;
+    }
+  }
+
+  input[type=checkbox] {
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  // Show the menu
+  &.open .dropdown-menu {
+    display: block;
+  }
+
+  .no-js & {
+    input[type=checkbox]:checked ~ .dropdown-menu {
+      display: block;
+    }
+  }
+}
+.dropdown-menu {
+  left: 50%;
+  right: auto;
+  text-align: center;
+  transform: translate(-50%, 0);
+}

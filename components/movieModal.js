@@ -1,8 +1,8 @@
 //component based on the idea of Modules 
 //need to replace this with Modules and not Models but can't figure out why import is not working 
-class movieModal {
-	constructor(options={}) {
-	console.groupCollapsed('constructor');
+let movieSubmitFormModal= {
+	init:function(options={}) {
+	console.groupCollapsed('init');
 		function uuidv4() {
 		  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 			var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -19,24 +19,23 @@ class movieModal {
 		if(options.root){
 			this.root.id = options.root;
 			if(this.root.id){
-				this.root.dom=document.getElementById(this.root.id);
-				this.root.jquery=$('#'+this.root.id); 
+				this.root.dom=document.querySelector(this.root.id);
+				this.root.jquery=$(this.root.id); 
 			}
-			if(options.addModal2Root){
-				this.addModal2Root();
+			if(options.add2Root){
+				this.add2Root();
 			}
 		}
-		this.objName=this.constructor.name;
 		console.groupEnd();
-	}
-	addModal2Root(options={}) {
+	},
+	add2Root:function(options={}) {
 		//generates and appends the modal html elements to the rootdoom
-		console.groupCollapsed('addModal2Root');
+		console.groupCollapsed('add2Root');
 		if(options.root){
 			this.root.id = options.root;
 			if(this.root.id){
-				this.root.dom=document.getElementById(this.root.id);
-				this.root.jquery=$('#'+this.root.id); 
+				this.root.dom=document.querySelector(this.root.id);
+				this.root.jquery=$(this.root.id); 
 			}
 		}
 		console.log('root=',this.root);
@@ -59,7 +58,7 @@ class movieModal {
   </form></div>`;
 
 		this.modal.content=content;
-		this.modal.addModal2Root();
+		this.modal.add2Root();
 		let fields={ Title:'',Year:'',Runtime:'',Genre:'',Director:'',Writer:'',Actors:'',Plot:'',Language:'',Country:'',Poster:'',imdbRating:''};
 		let content_details="";
 		for (var key in fields){ //a for cycle that creates the titleLable,newLabel and so on elements
@@ -82,8 +81,8 @@ class movieModal {
 		}
 		this.modal.setElement([{selector:".modal-body", task:"inner", value:content_details}]);
 		console.groupEnd();
-	}
-	addEvents(){
+	},
+	addEvents:function(){
 		console.groupCollapsed('addEvents');
 		let me=this;
 		if(this.modal.main.dom.querySelector(".bt-save")){
@@ -174,8 +173,8 @@ class movieModal {
 			$(this).find('form')[0].reset();
 		});
 		console.groupEnd();
-	}
-	displayAdd(options={}){
+	},
+	displayAdd:function(options={}){
 		console.groupCollapsed('displayAdd');
 		if(options.movie){
 			console.warn("Please remove movie instant");
@@ -185,7 +184,7 @@ class movieModal {
 		this.mode="new";
 		displaySubmit(options);
 		console.groupEnd();
-	}
+	},
 	displayEdit(options={}){
 		console.groupCollapsed('displayEdit');
 		if(!options.movie){
@@ -197,8 +196,8 @@ class movieModal {
 		this.movie=options.movie;
 		this.displaySubmit(options);
 		console.groupEnd();
-	}
-	displaySubmit(options={}){
+	},
+	displaySubmit:function(options={}){
 		console.groupCollapsed('displaySubmit');
 		let movie='';
 		let response={ Title:'',Year:'',Runtime:'',Genre:'',Director:'',Writer:'',Actors:'',Plot:'',Language:'',Country:'',Poster:'',imdbRating:''};
@@ -216,53 +215,4 @@ class movieModal {
 		console.groupEnd();
 		this.modal.setElement([{selector:".modal-title", task:"inner", value:"Edit movie: "+response["Title"]||""}, "show"]);
 	}
-	/*fileuppload_triggered(event,me) {
-		console.groupCollapsed('fileuppload_triggered');
-	  //console.log('fileuppload_triggered');
-		var isError = false;
-		//var $i = $( '#fileInput' ), 
-		//input = $i[0]; 
-		console.log('event=',event);
-		console.log('this=',this);
-		console.log('me=',me);
-		let input=me.modal.main.dom.querySelector(".fileInput");
-		//var $i = $( '.fileInput' ), 
-		//input = $i[0]; 
-		console.log('input=',me);
-		if ( input.files && input.files[0] ) {
-			let file = input.files[0]; // The file
-			if ("path" in file) {
-			  //console.log("file_path: ",file.path);
-			}
-			if ("name" in file) {
-			  //console.log("file_name: ",file.name);
-			}
-			if ("size" in file) {
-			  //console.log("file_size: ",file.size);
-			}
-			
-			var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
-			if (allowedExtensions.exec(file.name)) {
-			  //console.log("file_extensionbvalid: ", true);
-			} else {
-			  //console.log("file_extensionbvalid: ", false);
-			  isError = true;
-			  ImageStatus(true, -2, file.name, "");
-			}
-			if (!isError) {
-				var reader = new FileReader();
-				reader.onload = function(e) {
-				//console.log("file_src: ", e.target.result);
-				//ImageStatus(true, 1, file.name, e.target.result);
-				console.log('result=',e.target.result);
-			  };
-			  reader.readAsDataURL(file);
-			}
-		} else {
-			// Handle errors here
-			//console.log( "file not selected" );
-			isError = true;
-		}
-		console.groupEnd();
-	}*/	
 }

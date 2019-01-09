@@ -38,7 +38,7 @@ let notificationPopUp={
 				//event.preventDefault(); // prevent the browser from focusing the Notification's tab
 				console.log('notification_error:',[n,event]);
 				if(modalElements&&modalElements["notification"]){
-					modalElements["notification"].addModal2Root();
+					modalElements["notification"].add2Root();
 					modalElements["notification"].setElement([{selector:".modal-title", task:"inner", value:"Error at notification"},{selector:".modal-body", task:"inner", value:event.error}, "show"]);
 				}
 			}

@@ -14,7 +14,7 @@ let auth2Pages={
 		if(document.querySelector("#btnUserAuth")){
 			console.log('add button event');
 			let me=this;
-			document.querySelector("#btnUserAuth").addEventListener("click",function(event){
+			$("#btnUserAuth").click("click",function(event){
 				event.preventDefault();
 				console.groupCollapsed('auth2Pages@btnUserAuth:click');
 				if(Auth.getAccessToken()){
@@ -27,7 +27,7 @@ let auth2Pages={
 							if(typeof doAfterSuccessLogOut !=="undefined"){
 								console.log("trigger doAfterSuccessLogOut");
 								try {
-									authAlert.addAlert2Root();
+									authAlert.add2Root();
 									authAlert.setType('success');
 									me.display();
 									authAlert.setElement([{selector:".alert-body",task:"inner",value:"Successfully loged out."},"show"]);
@@ -49,7 +49,7 @@ let auth2Pages={
 							if(typeof doAfterFailedLogOut !=="undefined"){
 								console.log("trigger doAfterSuccessLogOut");
 								try {
-									authAlert.addAlert2Root();
+									authAlert.add2Root();
 									authAlert.setType('danger');
 									authAlert.setElement([{selector:".alert-body",task:"inner",value:"Failed to log out."},"show"]);
 									authAlert.slideup();
@@ -67,7 +67,7 @@ let auth2Pages={
 					);
 				}else{
 					console.log('not loged in');
-					authModal.show();
+					authModal.open();
 				}
 				console.groupEnd();
 			});
@@ -82,18 +82,23 @@ let auth2Pages={
 		if(Auth.getAccessToken()){
 			console.log('loged in');
 			if(document.querySelector("#labelUserName")){
-				document.querySelector("#labelUserName").innerText="You are logged in as "+Auth.getAccessName();
+				$("#labelUserName").text("You are logged in as "+Auth.getAccessName());
 			}
 			if(document.querySelector("#btnUserAuth")){
-				document.querySelector("#btnUserAuth").innerText="Log out";
+				$("#btnUserAuth").html("<i class='fas fa-sign-out-alt' style='padding-right:5px;'></i>Log out");
+				$("#btnUserAuth").removeClass("btn-primary");
+				$("#btnUserAuth").addClass("btn-danger");
+				
 			}
 		}else{
 			console.log('not loged in');
 			if(document.querySelector("#labelUserName")){
-				document.querySelector("#labelUserName").innerText="No user is loged in";
+				$("#labelUserName").text("No user is loged in");
 			}
 			if(document.querySelector("#btnUserAuth")){
-				document.querySelector("#btnUserAuth").innerText="Log in";
+				$("#btnUserAuth").html("<i class='fas fa-sign-in-alt' style='padding-right:5px;'></i>Log in");
+				$("#btnUserAuth").removeClass("btn-danger");
+				$("#btnUserAuth").addClass("btn-primary");
 			}
 		}
 		console.groupEnd();
@@ -104,7 +109,7 @@ let auth2Pages={
 //component based on the idea of Modules 
 //need to replace this with Modules and not Models but can't figure out why import is not working 
 let authModal={
-	init:function(options={root:"body",addModal2Root:true,add2Head:true,addEvents:true}) {
+	init:function(options={root:"body",add2Root:true,add2Head:true,addEvents:true}) {
 		console.groupCollapsed('authModal@init');
 		this.initDone=true;
 		if(!(typeof options === 'object')){options={}};
@@ -120,15 +125,17 @@ let authModal={
 		this.id=uuidv4();
 		this.profile={mode:1,eye:0,protocol:'',mouseEye:0};
 		this.statusLog={inputError:[]};
-		this.settings={nameLength_min:6,nameLength_max:36,passwordLength_min:6,passwordLength_max:36, classList:{invalid:"error-content"}};
+		this.settings={nameLength_min:6,nameLength_max:36,passwordLength_min:6,passwordLength_max:36, classList:{invalid:"error-content"},
+		passwordBad :(/(?=.{8,}).*/),passwordGood :(/^(?=\S*?[a-z])(?=\S*?[0-9])\S{8,}$/),passwordBetter:(/^(?=\S*?[A-Z])(?=\S*?[a-z])((?=\S*?[0-9])|(?=\S*?[^\w\*]))\S{8,}$/),passwordBest:(/^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])(?=\S*?[^\w\*])\S{8,}$/)
+		};
 		if(options.root){
 			this.root.id = options.root;
 			if(this.root.id){
-				this.root.dom=document.getElementById(this.root.id);
-				this.root.jquery=$('#'+this.root.id); 
+				this.root.dom=document.querySelector(this.root.id);
+				this.root.jquery=$(this.root.id); 
 			}
-			if(options.addModal2Root){
-				this.addModal2Root(options.addModal2Root);
+			if(options.add2Root){
+				this.add2Root(options.add2Root);
 				if(options.addEvents){
 					this.addEvents();
 				}
@@ -157,16 +164,16 @@ let authModal={
 		}; 
 		console.groupEnd();		
 	},
-	addModal2Root:function(options={}) {
+	add2Root:function(options={}) {
 		//generates and appends the modal html elements to the rootdoom
-		console.groupCollapsed('authModal@addModal2Root');
+		console.groupCollapsed('authModal@add2Root');
 		//if(!this.initDone)this.init();
 		if(!(typeof options === 'object')){options={}};
 		if(options.root){
 			this.root.id = options.root;
 			if(this.root.id){
-				this.root.dom=document.getElementById(this.root.id);
-				this.root.jquery=$('#'+this.root.id); 
+				this.root.dom=document.querySelector(this.root.id);
+				this.root.jquery=$(this.root.id); 
 			}
 		}
 		console.log('root=',this.root);
@@ -186,8 +193,8 @@ let authModal={
 				<div class='form-group register-group' style="display:none">
 					<input type="text" name="email" placeholder='Email' value="" autocomplete="email" class="email text-input form-control register-input inputKeyupCheck">
 				</div>
-				<div class='form-group' style="display:block">
-					<input type="password" name="password" value="" autocomplete="password" placeholder='Password' class="password text-input form-control inputKeyupCheck" style="display:inline; width:90%"><button type="button" class="btn btn-warning btn-eye2Password" style="display:inline;"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="20" width="20"></button>
+				<div class='form-group' style="display:block;text-align: left;">
+					<input type="password" name="password" value="" autocomplete="password" data-toggle="popover" title="Password Strength" data-content="n/a" placeholder='Password' class="password text-input form-control inputKeyupCheck">
 				</div>
 				<div class='form-group register-group' style="display:none">
 					<input type="password" name="inputConfirmPassword" autocomplete="new-password" value="" placeholder='Retype your Password' class="confirm-password text-input form-control register-input inputKeyupCheck" >
@@ -201,47 +208,50 @@ let authModal={
 			</div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger bt-close" data-dismiss="modal">Close</button>
+		<button type="button" class="btn btn-warning btn-eye2Password"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="20" width="20"> Show password</button>		
 		<button type="button" class="btn btn-primary bt-loginOrRegister">Log In</button>
 		<button type="button" class="btn btn-secondary bt-newuserOrback">New</button>
 		<button type="button" class="btn btn-secondary bt-closenotification" style="display:none">Retry</button>
+		<button type="button" class="btn btn-danger bt-close" data-dismiss="modal">Close</button>
       </div>
     </div>
 
   </form></div>`;
 		this.modal.content=content;
 		if(!options.addSkip){
-			this.modal.addModal2Root(options.modal);
+			this.modal.add2Root(options.modal);
 		}
 		console.groupEnd();
 	},
 	displayLogIn:function(){
 		console.groupCollapsed('authModal@displayLogIn');
 		//if(!this.initDone)this.init();
+		let modal=this.modal.main.dom;
 		this.inputClear();
 		this.profile.mode=1;
-		this.modal.main.dom.querySelectorAll('.register-group').forEach(function(element,index){
+		modal.querySelectorAll('.register-group').forEach(function(element,index){
 			element.style.display="none";
 		});
-		this.modal.main.dom.querySelectorAll('.register-input').forEach(function(element,index){
+		modal.querySelectorAll('.register-input').forEach(function(element,index){
 			element.value="";
 		});
-		this.modal.main.dom.querySelector('.modal-title').innerHTML="User Log In";
-		this.modal.main.dom.querySelector('.bt-newuserOrback').innerHTML="New";
-		this.modal.main.dom.querySelector('.bt-loginOrRegister').innerHTML="Log In";
-		this.modal.main.dom.querySelector('.username').focus();
+		modal.querySelector('.modal-title').innerHTML="User Log In";
+		modal.querySelector('.bt-newuserOrback').innerHTML="New";
+		modal.querySelector('.bt-loginOrRegister').innerHTML="Log In";
+		modal.querySelector('.username').focus();
 		console.groupEnd();
 	},
 	displayRegister:function(){
 		console.groupCollapsed('authModal@displayRegister');
 		//if(!this.initDone)this.init();
+		let me=this;
+		let modal=this.modal.main.dom;
 		this.inputClear();
 		this.profile.mode=2;
 		if(this.profile.protocol!=="file:"){
 			console.log('Its on a network');
 			console.log('widgetId=',this.widgetId);
 			if(this.widgetId===-1){
-				let me=this;
 				this.widgetId=grecaptcha.render('add_g-recaptcha_here_'+me.id, {
 				  'sitekey' : '6LefgYEUAAAAAN1Loro_VTlFvcOcDvYfscJ1dlMH',
 				  'callback' :'recaptchaSuccess',
@@ -255,13 +265,13 @@ let authModal={
 		}else{
 			console.warn('Its not on network, disabling g-recaptcha requirement');
 		}
-		this.modal.main.dom.querySelectorAll('.register-group').forEach(function(element,index){
+		modal.querySelectorAll('.register-group').forEach(function(element,index){
 			element.style.display="block";
 		});
-		this.modal.main.dom.querySelector('.modal-title').innerHTML="New User Register";
-		this.modal.main.dom.querySelector('.bt-newuserOrback').innerHTML="Back";
-		this.modal.main.dom.querySelector('.bt-loginOrRegister').innerHTML="Register";
-		this.modal.main.dom.querySelector('.username').focus();
+		modal.querySelector('.modal-title').innerHTML="New User Register";
+		modal.querySelector('.bt-newuserOrback').innerHTML="Back";
+		modal.querySelector('.bt-loginOrRegister').innerHTML="Register";
+		modal.querySelector('.username').focus();
 		console.groupEnd();
 	},
 	addEvents:function(){
@@ -269,7 +279,9 @@ let authModal={
 		//if(!this.initDone)this.init();
 		console.log('4Buttons');
 		let me=this;
-		this.modal.main.dom.querySelector('.bt-close').addEventListener("click", function(event){
+		let mdom=this.modal.main.dom;
+		let mjquery=this.modal.main.jquery;
+		mjquery.find('.bt-close').click(function(event){
 			event.preventDefault();
 			console.groupCollapsed('authModal@.bt-close:click');
 			me.inputClear();
@@ -277,19 +289,19 @@ let authModal={
 			me.displayNotificationUndo();
 			console.groupEnd();
 		});
-		this.modal.main.dom.querySelector('.bt-closenotification').addEventListener("click", function(event){
+		mjquery.find('.bt-closenotification').click( function(event){
 			event.preventDefault();
 			console.groupCollapsed('authModal@.bt-closenotification:click');
 			me.displayNotificationUndo();
 			console.groupEnd();
 		});
-		this.modal.main.dom.querySelector(".btn-eye2Password").addEventListener("click", function(event){
+		mjquery.find(".btn-eye2Password").click(function(event){
 			event.preventDefault();
 			console.groupCollapsed('authModal@.bt-eye2Password:click');
 			me.eye2PasswordToggle(2);
 			console.groupEnd();
 		});
-		this.modal.main.dom.querySelector(".bt-newuserOrback").addEventListener("click", function(event){
+		mjquery.find(".bt-newuserOrback").click(function(event){
 			event.preventDefault();
 			console.groupCollapsed('authModal@.bt-newuserOrback:click');
 			if(me.profile.mode===1){
@@ -299,7 +311,7 @@ let authModal={
 			}
 			console.groupEnd();
 		});
-		this.modal.main.dom.querySelector(".bt-loginOrRegister").addEventListener("click", function(event){
+		mjquery.find(".bt-loginOrRegister").click(function(event){
 			event.preventDefault();
 			console.groupCollapsed('authModal@.bt-loginOrRegister');
 			if(me.profile.mode===1){
@@ -330,104 +342,127 @@ let authModal={
 			});
 			console.groupEnd();
 		}
-		this.modal.main.dom.querySelectorAll('.inputKeyupCheck').forEach(function(element,index){
+		mdom.querySelectorAll('.inputKeyupCheck').forEach(function(element,index){
 			inputKeyupEvent(element);
 		});
-		console.log('authModal@4Mouseover');
-			this.modal.main.dom.querySelector(".btn-eye2Password").addEventListener("mouseover", function(event){
+		/*console.log('authModal@4Mouseover');
+			modal.dom.querySelector(".btn-eye2Password").addEventListener("mouseover", function(event){
 				event.preventDefault();
 				console.groupCollapsed('authModal@passwordEye:mouseover');
 				me.profile.mouseEye=true;
 				me.eye2PasswordToggle(1);
 				console.groupEnd();
 			});
-			this.modal.main.dom.querySelector(".btn-eye2Password").addEventListener("mouseleave", function(event){
+			modal.dom.querySelector(".btn-eye2Password").addEventListener("mouseleave", function(event){
 				event.preventDefault();
 				console.groupCollapsed('authModal@passwordEye:mouseleave');
 				me.profile.mouseEye=false;
 				me.eye2PasswordToggle(0);
 				console.groupEnd();
-			});
+			});*/
 		console.log("input enter -> focus")
-			this.modal.main.dom.querySelector(".username").addEventListener("keyup",function(event){
+			mjquery.find(".username").keyup(function(event){
 				if (event.keyCode === 13&&me.inputKeyupCheck({element:this,type:"name"})) {
 					console.log("enter_hit:correct");
 					if(me.profile.mode===2){
-						me.modal.main.dom.querySelector(".email").focus();
+						mjquery.find(".email").focus();
 					}else{
-						me.modal.main.dom.querySelector(".password").focus();
+						mjquery.find(".password").focus();
 					}
 				}
 			});
-			this.modal.main.dom.querySelector(".password").addEventListener("keyup",function(event){
+			mjquery.find(".password").keyup(function(event){
 				if (event.keyCode === 13&&me.inputKeyupCheck({element:this,type:"password"})) {
 					console.log("enter_hit:correct");
 					if(me.profile.mode===2){
-						me.modal.main.dom.querySelector(".confirm-password").focus();
+						mjquery.find(".confirm-password").focus();
 					}else{
-						me.modal.main.dom.querySelector(".bt-loginOrRegister").focus();
+						mjquery.find(".bt-loginOrRegister").focus();
 					}
 				}
 			});
-			this.modal.main.dom.querySelector(".email").addEventListener("keyup",function(event){
+			mjquery.find(".email").keyup(function(event){
 				if (event.keyCode === 13&&me.inputKeyupCheck({element:this,type:"password"})) {
 					console.log("enter_hit:correct");
-					me.modal.main.dom.querySelector(".password").focus();					
+					mjquery.find(".password").focus();					
 				}
 			});
-			this.modal.main.dom.querySelector(".confirm-password").addEventListener("keyup",function(event){
+			mjquery.find(".confirm-password").keyup(function(event){
 				if (event.keyCode === 13&&me.inputKeyupCheck({element:this,type:"password"})) {
 					console.log("enter_hit:correct");
 					//me.modal.main.dom.querySelector(".bt-loginOrRegister").focus();
 					//Google repatcha uses sandbox attribute, its iFrame cant be accessed by script :C
 				}
 			});
+		console.log('passwordstr');
+		mjquery.find('.password').popover({
+			placement: 'top',
+			trigger: 'focus'
+		});
+		mjquery.find(".password").keyup(function () {
+			console.groupCollapsed('password_input');
+			var password = $(this);
+			var pass = password.val();
+			var passLabel = $('[for="password"]');
+			var stength = 'Weak';
+			var pclass = 'danger';
+			if (me.settings.passwordBest.test(pass) == true) {
+				stength = 'Very Strong';
+				pclass = 'success';
+			} else if (me.settings.passwordBetter.test(pass) == true) {
+				stength = 'Strong';
+				pclass = 'warning';
+			} else if (me.settings.passwordGood.test(pass) == true) {
+				stength = 'Almost Strong';
+				pclass = 'warning';
+			} else if (me.settings.passwordBad.test(pass) == true) {
+				stength = 'Weak';
+			} else {
+				stength = 'Very Weak';
+			}
+			console.log("stength=",stength);
+			//password.attr('data-toggle',"popover");
+			//password.attr('title', "Password Strength");// wanted t o set the title here but for some reason it wont
+			var popover = password.attr('data-content', stength).data('bs.popover');
+			popover.setContent();
+			popover.$tip.addClass(popover.options.placement).removeClass('danger success info warning primary').addClass("auth-popover").addClass(pclass);
+			console.groupEnd();
+
+		});	
 		console.groupEnd();
 	},
 	eye2PasswordToggle:function(mode=0){
 		console.groupCollapsed('authModal@eye2PasswordToggle');
 		//if(!this.initDone)this.init();
-		if(mode===-1){//reset
-			console.log('resets profile eye');
-			this.profile.eye=false;
-		}
+		let modal=this.modal.main.jquery;
 		if(mode===2||mode===20||mode===21){
-			if(mode===20){//force hide
-				this.profile.eye=true;
-			}
-			if(mode===21){//force show
+			if((mode===2&&this.profile.eye)||mode===20){
+				console.log('change to hide mode');
 				this.profile.eye=false;
-			}
-			if(this.profile.eye){
-				console.log('hide');
-				this.profile.eye=false;
-				this.modal.main.dom.querySelector('input[name="password"]').setAttribute('type', 'password');
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.add("btn-warning");
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.remove("btn-info");
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.remove("btn-success");
-			}else{
-				console.log('show');
+				modal.find('input[name="password"]').attr('type', 'password');
+				modal.find(".btn-eye2Password").removeClass("btn-info btn-success");
+				modal.find(".btn-eye2Password").addClass("btn-warning");
+			}else if((mode===2&&!this.profile.eye)||mode===21){
+				console.log('change to show mode');
 				this.profile.eye=true;
-				this.modal.main.dom.querySelector('input[name="password"]').setAttribute('type', 'text');
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.remove("btn-warning");
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.remove("btn-info");
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.add("btn-success");
+				modal.find('input[name="password"]').attr('type', 'text');
+				modal.find(".btn-eye2Password").removeClass("btn-warning btn-info");
+				modal.find(".btn-eye2Password").addClass("btn-success");
 			}
-		}else
-		if(mode===1){
+		}
+		else if(mode===1){
 			if(!this.profile.eye){
 				console.log('show');
-				this.modal.main.dom.querySelector('input[name="password"]').setAttribute('type', 'text');
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.remove("btn-warning");
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.add("btn-info");
+				modal.find('input[name="password"]').attr('type', 'text');
+				modal.find(".btn-eye2Password").removeClass("btn-warning btn-success");
+				modal.find(".btn-eye2Password").addClass("btn-info");
 			}
 		}else{
 			if(!this.profile.eye){
 				console.log('hide');
-				this.modal.main.dom.querySelector('input[name="password"]').setAttribute('type', 'password');
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.add("btn-warning");
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.remove("btn-info");
-				this.modal.main.dom.querySelector(".btn-eye2Password").classList.remove("btn-success");
+				modal.find('input[name="password"]').attr('type', 'password');
+				modal.find(".btn-eye2Password").removeClass("btn-info btn-success");
+				modal.find(".btn-eye2Password").addClass("btn-warning");
 			}
 		}
 		console.groupEnd();
@@ -462,37 +497,38 @@ let authModal={
 			return false;
 		}
 		let text=options.element.value.trim();
+		let element=$(options.element);
 		if(options.type){
 			if(options.type==='name'){
 				if(text.length<this.settings.nameLength_min){
 					//console.warn('name to small');
-					options.element.classList.add(this.settings.classList.invalid);result=false;
+					element.addClass(this.settings.classList.invalid);result=false;
 				}else
 				if(text.length>this.settings.nameLength_max){
 					//console.warn('name to big');
-					options.element.classList.add(this.settings.classList.invalid);result=false;
+					element.addClass(this.settings.classList.invalid);result=false;
 				}else{
-					options.element.classList.remove(this.settings.classList.invalid);
+					element.removeClass(this.settings.classList.invalid);
 				}
 			}else
 			if(options.type==='password'){
 				if(text.length<this.settings.passwordLength_min){
 					//console.warn('password to small');
-					options.element.classList.add(this.settings.classList.invalid);result=false;
+					element.addClass(this.settings.classList.invalid);result=false;
 				}else
 				if(text.length>this.settings.passwordLength_max){
 					//console.warn('password to big');
-					options.element.classList.add(this.settings.classList.invalid);result=false;
+					element.addClass(this.settings.classList.invalid);result=false;
 				}else{
-					options.element.classList.remove(this.settings.classList.invalid);
+					element.removeClass(this.settings.classList.invalid);
 				}
 			}else
 			if(options.type==='email'){
 				if(!this.validateEmail(text)){
 					//console.warn('invalid email');
-					options.element.classList.add(this.settings.classList.invalid);result=false;
+					element.addClass(this.settings.classList.invalid);result=false;
 				}else{
-					options.element.classList.remove(this.settings.classList.invalid);result=false;
+					element.removeClass(this.settings.classList.invalid);result=false;
 				}
 			}
 		}
@@ -513,33 +549,34 @@ let authModal={
 		console.groupCollapsed('authModal@inputCheck');
 		//if(!this.initDone)this.init();
 		console.log('profile.mode=',this.profile.mode);
+		let modal=this.modal.main.dom;
 		var errorLog=[];
-		this.modal.main.dom.querySelectorAll('input').forEach(function(input,i){
+		modal.querySelectorAll('input').forEach(function(input,i){
 			input.value=input.value.trim();
 		});
-		if(this.modal.main.dom.querySelector('input[name="username"]').value.length<this.settings.nameLength_min){
+		if(modal.querySelector('input[name="username"]').value.length<this.settings.nameLength_min){
 			console.warn('name too small');
 			errorLog.push('name too small');
 		}
-		if(this.modal.main.dom.querySelector('input[name="username"]').value.length>this.settings.nameLength_max){
+		if(modal.querySelector('input[name="username"]').value.length>this.settings.nameLength_max){
 			console.warn('name too big');
 			errorLog.push('name too big');
 		}
-		if(this.modal.main.dom.querySelector('input[name="password"]').value.length<this.settings.passwordLength_min){
+		if(modal.querySelector('input[name="password"]').value.length<this.settings.passwordLength_min){
 			console.warn('password too small');
 			errorLog.push('password too small');
 		}
-		if(this.modal.main.dom.querySelector('input[name="password"]').value.length>this.settings.passwordLength_max){
+		if(modal.querySelector('input[name="password"]').value.length>this.settings.passwordLength_max){
 			console.warn('password too big');
 			errorLog.push('password too big');
 		}
 		if(this.profile.mode===2){
 			console.log('registry requirements');
-			if(this.modal.main.dom.querySelector('input[name="inputConfirmPassword"]').value!=this.modal.main.dom.querySelector('input[name="password"]').value){
+			if(modal.querySelector('input[name="inputConfirmPassword"]').value!=modal.querySelector('input[name="password"]').value){
 				console.warn('password not a match');
 				errorLog.push('password not a match');
 			}
-			if(!this.validateEmail(this.modal.main.dom.querySelector('input[name="email"]').value)){
+			if(!this.validateEmail(modal.querySelector('input[name="email"]').value)){
 				console.warn('email is not valid');
 				errorLog.push('email is not valid');
 			}
@@ -577,44 +614,47 @@ let authModal={
 	displayNotificationUndo:function(){
 		console.groupCollapsed('authModal@displayNotificationUndo');
 		//if(!this.initDone)this.init();
-		this.modal.main.dom.querySelector('.loginOrRegister').style.display="";
-		this.modal.main.dom.querySelector('.notification').style.display="none";
-		this.modal.main.dom.querySelector('.bt-loginOrRegister').style.display="";
-		this.modal.main.dom.querySelector('.bt-newuserOrback').style.display="";
-		this.modal.main.dom.querySelector('.bt-closenotification').style.display="none";
+		let modal=this.modal.main.dom;
+		modal.querySelector('.loginOrRegister').style.display="";
+		modal.querySelector('.notification').style.display="none";
+		modal.querySelector('.bt-loginOrRegister').style.display="";
+		modal.querySelector('.bt-newuserOrback').style.display="";
+		modal.querySelector('.bt-closenotification').style.display="none";
 		console.groupEnd();
 	},
 	displayNotification:function(options={}){
 		console.groupCollapsed('authModal@displayNotification');
 		//if(!this.initDone)this.init();
-		console.log("options=",options);	
+		console.log("options=",options);
+		let modal=this.modal.main.dom;		
 		if(options.type){
 			if(options.type===1){//processing
-				this.modal.main.dom.querySelector('.bt-closenotification').style.display="none";
+				modal.querySelector('.bt-closenotification').style.display="none";
 			}else
 			if(options.type===-1){//failed
-				this.modal.main.dom.querySelector('.bt-closenotification').style.display="";
+				modal.querySelector('.bt-closenotification').style.display="";
 			}
 		}
 		if(options.body){
-			this.modal.main.dom.querySelector('.notification').innerHTML=options.body;
+			modal.querySelector('.notification').innerHTML=options.body;
 		}
 		/*if(options.title){
 			this.modal.main.dom.querySelector('.modal-title').innerHTML=options.title;
 		}*/
-		this.modal.main.dom.querySelector('.bt-loginOrRegister').style.display="none";
-		this.modal.main.dom.querySelector('.bt-newuserOrback').style.display="none";
-		this.modal.main.dom.querySelector('.loginOrRegister').style.display="none";
-		this.modal.main.dom.querySelector('.notification').style.display="block";
+		modal.querySelector('.bt-loginOrRegister').style.display="none";
+		modal.querySelector('.bt-newuserOrback').style.display="none";
+		modal.querySelector('.loginOrRegister').style.display="none";
+		modal.querySelector('.notification').style.display="block";
 		console.groupEnd();
 	},
 	callLogIn:function(){
 		console.groupCollapsed('authModal@callLogIn');
 		//if(!this.initDone)this.init();
+		let modal=this.modal.main.dom;
 		if(this.inputCheck()){
 			var data={};
-			data.username=this.modal.main.dom.querySelector('input[name="username"]').value.trim();
-			data.password=this.modal.main.dom.querySelector('input[name="password"]').value.trim();
+			data.username=modal.querySelector('input[name="username"]').value.trim();
+			data.password=modal.querySelector('input[name="password"]').value.trim();
 			console.log('data=',data);
 			let me=this;
 			this.statusLog.callResponse={status:0,mode:1,data:data,response:""};
@@ -629,7 +669,7 @@ let authModal={
 					if(typeof doAfterSuccessLogin !=="undefined"){
 						console.log("trigger doAfterSuccessLogin");
 						try {
-							authAlert.addAlert2Root();
+							authAlert.add2Root();
 							authAlert.setType('success');
 							auth2Pages.display();
 							authAlert.setElement([{selector:".alert-body",task:"inner",value:"Successfully loged in."},"show"]);
@@ -676,10 +716,11 @@ let authModal={
 	callRegister:function(){
 		console.groupCollapsed('authModal@callRegister');
 		//if(!this.initDone)this.init();
+		let modal=this.modal.main.dom;
 		if(this.inputCheck()){
 			var data={};
-			data.username=this.modal.main.dom.querySelector('input[name="username"]').value.trim();
-			data.password=this.modal.main.dom.querySelector('input[name="password"]').value.trim();
+			data.username=modal.querySelector('input[name="username"]').value.trim();
+			data.password=modal.querySelector('input[name="password"]').value.trim();
 			//the movie api does not require email, so it's pointless to add one 
 			console.log('data=',data);
 			this.displayNotification({type:1,body:"<p>Please wait</p>"});
@@ -695,7 +736,7 @@ let authModal={
 					if(typeof doAfterSuccessRegister !=="undefined"){
 						console.log("trigger doAfterSuccessRegister");
 						try {
-							authAlert.addAlert2Root();
+							authAlert.add2Root();
 							authAlert.setType('success');
 							auth2Pages.display();
 							authAlert.setElement([{selector:".alert-body",task:"inner",value:"Successfully registered."},"show"]);
@@ -786,7 +827,7 @@ let authModal={
 		console.groupCollapsed('authModal@open');
 		//if(!this.initDone)this.init();
 		this.inputClear();
-		this.eye2PasswordToggle(-1);
+		this.eye2PasswordToggle(20);
 		this.displayNotificationUndo();
 		this.modal.show();
 		console.groupEnd();
@@ -796,7 +837,7 @@ let authModal={
 		//if(!this.initDone)this.init();
 		this.modal.hide();
 		this.inputClear();
-		this.eye2PasswordToggle(-1);
+		this.eye2PasswordToggle(20);
 		this.displayNotificationUndo();
 		console.groupEnd();
 	}

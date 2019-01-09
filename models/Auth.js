@@ -100,7 +100,6 @@ class Auth{
 				if(!reject){reject={message:"Unknown Error"};}
 				return{reject};
 			 });
-	}
-	
+	}	
 }
 
