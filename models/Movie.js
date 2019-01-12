@@ -70,7 +70,15 @@ const moviesRootUrl = "https://ancient-caverns-16784.herokuapp.com/";
 
 Movie.prototype.getMovieDetails = function() {
   var me = this;
-  return $.get(moviesRootUrl +"movies/" + me.id).then(function(response) {
+  //if added by tamas to resolve a conflict that exists
+  let id="";
+  if(me.id){
+	  id=me.id;
+  }else
+  if(me._id){
+	  id=me._id;
+  }
+  return $.get(moviesRootUrl +"movies/" +id).then(function(response) {
     console.log("Movie", response);
     me._id = response._id;
     me.Title = response.Title;

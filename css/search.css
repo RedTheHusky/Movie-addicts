@@ -1,0 +1,12 @@
+/*.custom-search-dropbox{
+    padding-top: 50px;
+}*/
+.search-select{
+	display:inline;
+	width:50%;
+}
+@media only screen and (max-width: 549px) {
+	.src-extra-buttons{
+		display:block;
+	}
+}

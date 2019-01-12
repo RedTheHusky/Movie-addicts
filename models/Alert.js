@@ -188,7 +188,7 @@ class Alert {
 		console.groupEnd();
 		return true;
 	}
-	show(options=""){
+	show(options="show"){
 		console.groupCollapsed('show');
 		this.add2Root();
 		this.main.jquery.show(options);

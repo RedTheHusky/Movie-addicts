@@ -180,24 +180,28 @@ let authModal={
 		this.modal= new Modal({root:this.root.id});
 		let content=`<div class="modal-dialog"><form name=formAuth" action="">
     <!-- Modal content-->
-    <div class="modal-content">
+    <div class="modal-content auth-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">User Log In</h4>
+		<h4 class="modal-title">User Log In</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span></button>
       </div>
       <div class="modal-body">
 			<div class='loginOrRegister'>
 				<div class='form-group'>
-					<input type="text" name="username" placeholder='Username' value="" autocomplete="username" class="username text-input form-control inputKeyupCheck">
+					<span class="input-group-addon auth-icon"><i class="fas fa-user fa " aria-hidden="true"></i></span>
+					<input type="text" name="username" placeholder='Username' value="" autocomplete="username" class="username text-input form-control inputKeyupCheck auth-input">
 				</div>
 				<div class='form-group register-group' style="display:none">
-					<input type="text" name="email" placeholder='Email' value="" autocomplete="email" class="email text-input form-control register-input inputKeyupCheck">
+					<span class="input-group-addon auth-icon"><i class="fas fa-envelope fa" aria-hidden="true"></i></span>
+					<input type="text" name="email" placeholder='Email' value="" autocomplete="email" class="email text-input form-control register-input inputKeyupCheck auth-input">
 				</div>
-				<div class='form-group' style="display:block;text-align: left;">
-					<input type="password" name="password" value="" autocomplete="password" data-toggle="popover" title="Password Strength" data-content="n/a" placeholder='Password' class="password text-input form-control inputKeyupCheck">
+				<div class='form-group' style="display:block;">
+					<span class="input-group-addon auth-icon"><i class="fas fa-lock fa-lg" aria-hidden="true"></i></span>
+					<input type="password" name="password" value="" autocomplete="password" data-toggle="popover" title="Password Strength" data-content="n/a" placeholder='Password' class="password text-input form-control inputKeyupCheck auth-input">
 				</div>
 				<div class='form-group register-group' style="display:none">
-					<input type="password" name="inputConfirmPassword" autocomplete="new-password" value="" placeholder='Retype your Password' class="confirm-password text-input form-control register-input inputKeyupCheck" >
+					<span class="input-group-addon auth-icon"><i class="fas fa-lock fa-lg" aria-hidden="true"></i></span>
+					<input type="password" name="inputConfirmPassword" autocomplete="new-password" value="" placeholder='Retype your Password' class="confirm-password text-input form-control register-input inputKeyupCheck auth-input" >
 				</div>
 				<div class='form-group register-group' id="add_g-recaptcha_here_${this.id}" style="display:none">
 					
@@ -208,11 +212,11 @@ let authModal={
 			</div>
       </div>
       <div class="modal-footer">
-		<button type="button" class="btn btn-warning btn-eye2Password"><img id="passwordEye" src="../static/password_eyes.png" alt="password_eyes" height="20" width="20"> Show password</button>		
-		<button type="button" class="btn btn-primary bt-loginOrRegister">Log In</button>
-		<button type="button" class="btn btn-secondary bt-newuserOrback">New</button>
-		<button type="button" class="btn btn-secondary bt-closenotification" style="display:none">Retry</button>
-		<button type="button" class="btn btn-danger bt-close" data-dismiss="modal">Close</button>
+		<button type="button" class="btn btn-warning btn-eye2Password"><i class="fas fa-eye-slash"></i></button>		
+		<button type="button" class="btn btn-primary bt-loginOrRegister"><i class="fas fa-sign-in-alt auth-button-icon"></i>Log In</button>
+		<button type="button" class="btn btn-secondary bt-newuserOrback"><i class="fas fa-user-plus auth-button-icon"></i>New</button>
+		<button type="button" class="btn btn-secondary bt-closenotification" style="display:none"><i class="fas fa-undo-alt auth-button-icon"></i>Retry</button>
+		<button type="button" class="btn btn-danger bt-close" data-dismiss="modal"><i class="fas fa-times auth-button-icon"></i>Close</button>
       </div>
     </div>
 
@@ -235,9 +239,9 @@ let authModal={
 		modal.querySelectorAll('.register-input').forEach(function(element,index){
 			element.value="";
 		});
-		modal.querySelector('.modal-title').innerHTML="User Log In";
-		modal.querySelector('.bt-newuserOrback').innerHTML="New";
-		modal.querySelector('.bt-loginOrRegister').innerHTML="Log In";
+		modal.querySelector('.modal-title').innerHTML=`User Log In`;
+		modal.querySelector('.bt-newuserOrback').innerHTML=`<i class="fas fa-user-plus auth-button-icon"></i>New`;
+		modal.querySelector('.bt-loginOrRegister').innerHTML=`<i class="fas fa-sign-in-alt auth-button-icon"></i>Log In`;
 		modal.querySelector('.username').focus();
 		console.groupEnd();
 	},
@@ -269,8 +273,8 @@ let authModal={
 			element.style.display="block";
 		});
 		modal.querySelector('.modal-title').innerHTML="New User Register";
-		modal.querySelector('.bt-newuserOrback').innerHTML="Back";
-		modal.querySelector('.bt-loginOrRegister').innerHTML="Register";
+		modal.querySelector('.bt-newuserOrback').innerHTML=`<i class="fas fa-caret-left  auth-button-icon"></i>Back`;
+		modal.querySelector('.bt-loginOrRegister').innerHTML=`<i class="fas fa-user-plus  auth-button-icon"></i>Register`;
 		modal.querySelector('.username').focus();
 		console.groupEnd();
 	},
@@ -425,7 +429,8 @@ let authModal={
 			//password.attr('title', "Password Strength");// wanted t o set the title here but for some reason it wont
 			var popover = password.attr('data-content', stength).data('bs.popover');
 			popover.setContent();
-			popover.$tip.addClass(popover.options.placement).removeClass('danger success info warning primary').addClass("auth-popover").addClass(pclass);
+			//not working with version 4
+			//popover.$tip.addClass(popover.options.placement).removeClass('danger success info warning primary').addClass("auth-popover").addClass(pclass);
 			console.groupEnd();
 
 		});	
@@ -434,6 +439,8 @@ let authModal={
 	eye2PasswordToggle:function(mode=0){
 		console.groupCollapsed('authModal@eye2PasswordToggle');
 		//if(!this.initDone)this.init();
+		let html2Hide=`<i class="fas fa-eye-slash">`;
+		let html2Show=`<i class="fas fa-eye"></i>`;
 		let modal=this.modal.main.jquery;
 		if(mode===2||mode===20||mode===21){
 			if((mode===2&&this.profile.eye)||mode===20){
@@ -442,12 +449,14 @@ let authModal={
 				modal.find('input[name="password"]').attr('type', 'password');
 				modal.find(".btn-eye2Password").removeClass("btn-info btn-success");
 				modal.find(".btn-eye2Password").addClass("btn-warning");
+				modal.find(".btn-eye2Password").html(html2Show);
 			}else if((mode===2&&!this.profile.eye)||mode===21){
 				console.log('change to show mode');
 				this.profile.eye=true;
 				modal.find('input[name="password"]').attr('type', 'text');
 				modal.find(".btn-eye2Password").removeClass("btn-warning btn-info");
 				modal.find(".btn-eye2Password").addClass("btn-success");
+				modal.find(".btn-eye2Password").html(html2Hide);
 			}
 		}
 		else if(mode===1){
@@ -456,6 +465,7 @@ let authModal={
 				modal.find('input[name="password"]').attr('type', 'text');
 				modal.find(".btn-eye2Password").removeClass("btn-warning btn-success");
 				modal.find(".btn-eye2Password").addClass("btn-info");
+				modal.find(".btn-eye2Password").html(html2Hide);
 			}
 		}else{
 			if(!this.profile.eye){
@@ -463,6 +473,7 @@ let authModal={
 				modal.find('input[name="password"]').attr('type', 'password');
 				modal.find(".btn-eye2Password").removeClass("btn-info btn-success");
 				modal.find(".btn-eye2Password").addClass("btn-warning");
+				modal.find(".btn-eye2Password").html(html2Show);
 			}
 		}
 		console.groupEnd();
@@ -674,7 +685,7 @@ let authModal={
 							auth2Pages.display();
 							authAlert.setElement([{selector:".alert-body",task:"inner",value:"Successfully loged in."},"show"]);
 							authAlert.slideup();
-							doAfterSuccessRegister({obj:me,response:resolve});
+							doAfterSuccessLogin({obj:me,response:resolve});
 						}
 						catch(err) {
 							console.warn('error at function call:',err)
@@ -826,10 +837,16 @@ let authModal={
 	open:function(){
 		console.groupCollapsed('authModal@open');
 		//if(!this.initDone)this.init();
+		let me=this;
 		this.inputClear();
+		this.displayLogIn();
 		this.eye2PasswordToggle(20);
 		this.displayNotificationUndo();
 		this.modal.show();
+		setTimeout(function(){
+			console.log('focus');
+			me.modal.main.dom.querySelector('.username').focus();
+		}, 500);
 		console.groupEnd();
 	},
 	close:function(){

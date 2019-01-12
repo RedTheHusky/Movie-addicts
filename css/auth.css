@@ -57,3 +57,18 @@
     background-color:#f2dede;
     border-color:#ebccd1;
 }
+.auth-icon{
+  position: relative; 
+   left: -45%; 
+   top: 30px; 
+}
+.auth-input{
+	text-align:left;
+	padding-left:50px;
+}
+.auth-content{
+	width:80%;
+}
+.auth-button-icon{
+	padding-right:5px;
+}

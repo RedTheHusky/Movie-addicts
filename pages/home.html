@@ -1,97 +1,114 @@
-<!-- <!DOCTYPE html>-->
+<!DOCTYPE html>
+
 <html>
 
-<head>
-	<!-- removed duplication in header by Tamas-->
-	<title>Movie addicts</title>
-	<link rel="icon" href="../static/32396-popcorn-icon.png"><!-- added by Tamas -->
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- added by Iulia -->
-	
-    <link rel="stylesheet" type="text/css" href="../css/styles.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"><!-- added by Tamas -->
-	<link rel="stylesheet" type="text/css" href="../css/auth.css"><!-- added by Tamas -->
-	<link rel="stylesheet" href="../css/dropdown.css"><!-- added by Tamas -->																	  
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous"><!-- added by Tamas -->
+	<head>
+		<title>Movie addicts</title>
+		<link rel="icon" href="../static/32396-popcorn-icon.png"><!-- added by Tamas -->
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"><!--added by Iulia -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script><!-- added by Tamas -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous"><!-- added by Tamas -->
+	    <link rel="stylesheet" type="text/css" href="../css/styles.css">
+		<link rel="stylesheet" href="../css/auth.css"><!-- added by Tamas -->
+		<link rel="stylesheet" href="../css/search.css"><!-- added by Tamas --->		
+		<script src='../models/Modal.js' type='text/javascript'></script><!-- added by Tamas -->
+		<script src='../models/Alert.js' type='text/javascript'></script><!-- added by Tamas -->
+		<script src='../libs/notification.js' type='text/javascript'></script><!-- added by Tamas -->
+		<script src='../libs/imageFileUploader.js' type='text/javascript'></script><!-- added by Tamas -->
+	</head>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script><!-- added by Tamas -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script><!-- added by Tamas -->
-	<script src='../models/Modal.js' type='text/javascript'></script><!-- added by Tamas -->
-	<script src='../models/Alert.js' type='text/javascript'></script><!-- added by Tamas -->
-	<script src='../libs/notification.js' type='text/javascript'></script><!-- added by Tamas -->
-	<script src='../libs/imageFileUploader.js' type='text/javascript'></script><!-- added by Tamas -->
-</head>
-
-<body>
+	<body class="container-fluid">
 	<div id='alertRoot'></div><div id='modalRoot'></div>
-	<nav class="navbar navbar-default navbar-expand-lg navbar-light">
-		<div class="collapse navbar-collapse justify-content-start" style="padding-top:10px;padding-bottom:10px;">
-			<img class= "logo" src='../static/logo-movie-addicts.png' alt="logo">
-			<ul class="nav navbar-nav  navbar-right ml-auto">
-				<li class="nav-item" style="display:block;padding-top:0px;padding-right:10px;">
-				    <h4><span  id="labelUserName" class="label label-default"></span></h4>
-					<!--<label name="labelUserName" id="labelUserName"></label>-->
-				</li>
-				<li class="nav-item" style="padding-right:10px;">
+		<div class="container-wraper">
+			<nav class="navbar">
+				<img class= "logo" src='../static/logo-movie-addicts.png' alt="logo">
+				<div class="social-buttons" class="nav navbar-nav navbar-right" style="margin:20px;">
+					<i class="nav-item fab fa-facebook fa-2x jokesocialmediacall"></i>
+					<i class="nav-item fab fa-instagram fa-2x jokesocialmediacall"></i>
+					<i class="nav-item fab fa-twitch fa-2x jokesocialmediacall"></i>
+					<i class="nav-item fab fa-twitter fa-2x jokesocialmediacall"></i>
+					<i class="nav-item fab fa-youtube fa-2x jokesocialmediacall"></i>
 					<button id="btnUserAuth" class="btn nav-link btn-secondary" aria-expanded="false">Login</button>
-				</li>
-			</ul>
-			<ul class="nav navbar-nav  navbar-right ml-auto">
-				<i class="nav-item fab fa-facebook fa-2x jokesocialmediacall"></i>
-				<i class="nav-item fab fa-instagram fa-2x jokesocialmediacall"></i>
-				<i class="nav-item fab fa-twitch fa-2x jokesocialmediacall"></i>
-				<i class="nav-item fab fa-twitter fa-2x jokesocialmediacall"></i>
-				<i class="nav-item fab fa-youtube fa-2x jokesocialmediacall"></i>
-			</ul>
+				</div>
+			</nav> 
+			<div class='btnSearch container' id="searchRoot">
+				<div class="input-group" >
+				<div class="col-sm-12 col-xl-6" >
+				<input type="text" id="search-value" class="form-control input-lg" placeholder="Title">
+					<div class="dropdown custom-search-dropbox" id="dropdown">
+						<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display:none">show</button>
+						<div class="dropdown-menu" role="menu" aria-labelledby="dropdownMenuButton" id="dropdown-content">
+							<a class="dropdown-item" role="menuitem" href="#">Text</a>
+							<div class="dropdown-divider"></div>
+						</div>
+				    </div>
+					
+				</div>
+				<div class="col-sm-12 col-xl-6" >
+						<select id="search-category" class="form-control search-select">
+							<option value="Title">Title</option>
+							<option value="Year">Year</option>
+							<option value="Genre">Genre</option>
+							<option value="Country">Country</option>
+							<option value="Type">Type</option>
+						</select>
+						<span class="input-group-btn src-extra-buttons">
+							<button id="search-do" class="btn btn-info btn-lg" type="button" data-toggle="tooltip" data-placement="bottom" title="Click to do basic search"><i class="fas fa-search"></i></button>
+							<button id="search-openadvance" class="btn btn-info btn-lg" type="button" data-toggle="tooltip" data-placement="bottom" title="Advanced search"><i class="fas fa-cog"></i></button>
+						</span>
+						<span class="input-group-btn src-extra-buttons">
+							<button id="refresh-page" class="btn btn-info btn-lg" type="button" data-toggle="tooltip" data-placement="bottom" title="Refresh search and displayed movies"><i class="fas fa-redo-alt"></i></button>
+							<button id="reset-page" class="btn btn-info btn-lg" type="button" data-toggle="tooltip" data-placement="bottom" title="Reset search and displayed movies."><i class="fas fa-backspace"></i></button>
+						</span>
+				</div>
+
+				</div>
+			</div>
+			
+				<div id="moviesSubmit"></div>
+				<div id="movies"></div>
+				<div id="template" style="display:none" class="col-sm-12 col-md-6 col-xl-4">
+					<div class="thumbnail">
+						<div class="title-thumbnail">
+							<h5 class="movie-header">
+								<span class="movie-title"></span>
+							</h5>
+							<p class="movie-year"></p>
+							<p class="movie-runtime"></p>
+							<p class ="movie-genre"></p>
+						</div>
+						<img class="movie-poster" alt="movie-poster">
+						<div class="buttons">
+							<button class="movie-details">More Details</button>
+							<button class="movie-delete">Delete</button>
+							<button class="movie-edit">Edit</button>
+						</div>
+					</div>
+				</div>
+
+			<div id="pagination-template" class="pagination-template" style="display:none">
+				<button class="pages-btn"></button>
+			</div>
+			<div id="pagination">
+				
+			</div>
+			<footer>
+  				© Copyright Movie Addicts 2019, All Rights Reserved
+			</footer>
 		</div>
+		
 
-	</nav>
-	<section id='btnSearch'>
-		<div id='searchDiv'>
-				<input type='text' placeholder='Search by Title' name='search' />
-				<button id='search-btn'>Search</button>
-		</div>
-	</section>
-	<div id='searchOptionDiv'>
-		<div id='searchDivYear'>Search by Year</div>
-		<div id='searchDivLanguage'>Search by Language</div>
-		<div id='searchDivGenre'>Search by Genre</div>
-	</div>
-	
-	
-	<div id="moviesSubmit"></div>
-	<div id="movies"></div>
-	<div id="template" style="display:none">
-		<h3 class="movie-header">
-			<span class="movie-title"></span>
-		</h3>
-		<p class="movie-year"></p>
-		<p class="movie-runtime"></p>
-		<p class ="movie-genre"></p>
-		<img class="movie-poster" alt="movie-poster">
-		<div class="buttons">
-			<button class="movie-details">More Details</button>
-			<button class="movie-delete">Delete</button>
-	        <button class="movie-edit">Edit</button>
-   		</div>
-
-
-	</div>
-	<div id="pagination"></div>
-	<div id="pagination-template" class="pagination-template" style="display : none">
-		<button class="pages-btn"></button>
-	</div>
-	
-
-	<script src="../models/Movies.js"></script>
-	<script src="../models/Movie.js"></script>
-	<script src='../components/movieModal.js' type='text/javascript'></script>
-	<script src='../models/Auth.js' type='text/javascript'></script><!-- added by Tamas -->
-	<script src='../libs/Storage.js' type='text/javascript'></script><!-- added by Tamas -->
-	<script src="../views/auth.js"></script><!-- added by Tamas -->
-	<script src='../views/jokeSocialMediaCall.js' type='text/javascript'></script><!-- added by Tamas -->
-	<script src='../views/dynamicSearchBarList.js' type='text/javascript'></script><!-- added by Tamas -->
-	<script src="../views/home.js"></script>
-</body>
- </html>
+		<script src="../models/Movies.js"></script>
+		<script src="../models/Movie.js"></script>
+		<script src='../models/Auth.js' type='text/javascript'></script><!-- added by Tamas -->
+		<script src='../libs/Storage.js' type='text/javascript'></script><!-- added by Tamas -->
+		<script src="../views/auth.js"></script><!-- added by Tamas -->
+			<script src='../views/searchMovie.js' type='text/javascript'></script><!-- added by Tamas -->
+		<script src='../views/jokeSocialMediaCall.js' type='text/javascript'></script><!-- added by Tamas -->
+		<script src="../views/home.js"></script>
+	</body>
+</html>

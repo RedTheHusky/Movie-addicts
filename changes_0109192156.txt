@@ -1,0 +1,5 @@
+#Changed model/Movies.js
+	added an if to getMovieDetails to allow resolving conflict between two pages using id as: id and _id
+
+#Added Dan's work, fixing conflict between older version of homepage 
+

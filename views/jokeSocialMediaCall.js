@@ -1,6 +1,6 @@
 let jokeSocialMediaCall={
 	init:function(options={root:"body",add2Root:true}) {
-		//console.groupCollapsed('init');
+		console.groupCollapsed('init');
 		this.initDone=true;
 		this.modal="";
 		this.root={id:'',dom:'',jquery:''};
@@ -10,7 +10,7 @@ let jokeSocialMediaCall={
 			this.root.id = options.root;
 			if(this.root.id){
 				this.root.dom=document.getElementById(this.root.id);
-				this.root.jquery=$('#'+this.root.id); 
+				this.root.jquery=$(this.root.id); 
 			}
 			if(options.add2Root){
 				this.add2Root(options.add2Root);
@@ -20,18 +20,18 @@ let jokeSocialMediaCall={
 			}
 		}
 		
-		//console.groupEnd();
+		console.groupEnd();
 	},
 	add2Root:function(options={}) {
 		//generates and appends the modal html elements to the rootdoom
-		//console.groupCollapsed('add2Root');
+		console.groupCollapsed('add2Root');
 		if(!this.initDone)this.init();
 		if(!(typeof options === 'object')){options={}};
 		if(options.root){
 			this.root.id = options.root;
 			if(this.root.id){
-				this.root.dom=document.getElementById(this.root.id);
-				this.root.jquery=$('#'+this.root.id); 
+				this.root.dom=document.querySelector(this.root.id);
+				this.root.jquery=$(this.root.id); 
 			}
 		}
 		//console.log('root=',this.root);
@@ -39,10 +39,10 @@ let jokeSocialMediaCall={
 		if(!options.addSkip){
 			this.modal.add2Root(options.modal);
 		}
-		//console.groupEnd();
+		console.groupEnd();
 	},
 	addEvents:function(){
-		//console.groupCollapsed('addEvents');
+		console.groupCollapsed('addEvents');
 		if(!this.initDone)this.init();
 		//console.groupCollapsed('4Buttons');
 		this.buttonsList=document.querySelectorAll('.jokesocialmediacall');
@@ -72,7 +72,7 @@ let jokeSocialMediaCall={
 			});
 		});
 		//console.groupEnd();
-		//console.groupEnd();
+		console.groupEnd();
 	},
 	showModal:function(){
 		if(!this.initDone)this.init();

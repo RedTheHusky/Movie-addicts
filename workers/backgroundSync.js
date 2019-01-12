@@ -4,7 +4,7 @@ if it did change based from the information it gathered it will trigger the host
 */
 let timerForCheckingModificationl={mcycle:60000,obj:'',mfire:60000, mcount:0}; //this is 900000 ms == 15 minutes
 let mode=0; //1-all 2-special
-let movies={main:{items:[],pagination:{}},background:{items:[],pagination:{}}, settings:{skip:0,take:10,searchParam:'',category:''}};
+let movies={main:{items:[],pagination:{}},background:{items:[],pagination:{}}, settings:{skip:0,take:10,searchParam:{}}};
 let movie={main:{},background:{},id:''};
 let movieUrl='https://ancient-caverns-16784.herokuapp.com/movies'
 let urlMovies='';
@@ -14,23 +14,17 @@ let stats={
 	xhttp:{calls:0, success:0, failure:0},
 	checkup:{up2Date:0,modified:0}
 };
-//status.called.movies_items status.called.movies_pagination status.called.movies_skip status.called.movies_searchparam status.called.movies_category status.called.timer4Check
-//stats.xhttp.calls stats.xhttp.success stats.xhttp.failure
-//stats.checkup.up2Date stats.checkup.modified
+
 self.onmessage = function (msg) {
     //console.groupCollapsed('onmessage');
 	//console.log("msg=",msg);
 		stats.received++;
-		/*if(msg.data.importScript){
-			//console.log('we got importScript');
-			//console.log("value=",msg.data.importScript);
-			importScripts(msg.data.importScript);
-		}else*/
+
 		if(msg.data.mode){
-			//console.log('we got mode');
+			console.log('got mode');
 			stats.called.mode++;
 			mode=msg.data.mode;
-			//console.log("value=",mode);
+			console.log("mode=",mode);
 			buildUrlMovies();
 		}
 		//movies
@@ -41,52 +35,52 @@ self.onmessage = function (msg) {
 				movies={main:{items:[],pagination:{}},background:{items:[],pagination:{}}, settings:{skip:0,take:10,searchParam:'',category:''}};
 			}
 			if(msg.data.movies.items){
-				//console.log('we got movies_items');
+				console.log('items');
 				stats.called.movies.items++;
 				movies.main.items=msg.data.movies.items;
 				console.log("items=",movies.main.items);
 			}
 			if(msg.data.movies.pagination){
-				//console.log('we got movies_pagination');
+				console.log('got pagination');
 				stats.called.movies.pagination++;
 				movies.main.pagination=msg.data.movies.pagination;
 				console.log("pagination=",movies.main.pagination);
 			}
 			if(msg.data.movies.skip){
-				//console.log('we got movies_skip');
+				console.log('got skip');
 				stats.called.movies.skip++;
 				movies.settings.skip=msg.data.movies.skip;
-				//console.log("value=",movies.settings.skip);
+				console.log("skip=",movies.settings.skip);
 				buildUrlMovies();
 			}
 			if(msg.data.movies.searchparam){
-				//console.log('we got movies_searchparam');
+				console.log('got searchparam');
 				stats.called.movies.searchparam++;
 				movies.settings.searchParam=msg.data.movies.searchparam;
-				//console.log("value=",movies.settings.searchParam);
+				console.log("searchParam=",movies.settings.searchParam);
 				buildUrlMovies();
 			}
-			if(msg.data.movies.category){
-				//console.log('we got movies_category');
-				stats.called.movies.category++;
-				movies.settings.category=msg.data.movies.category;
-				//console.log("value=",movies.settings.category);
+			if(msg.data.movies.take){
+				console.log('got take');
+				stats.called.movies.take++;
+				movies.settings.take=msg.data.movies.take;
+				console.log("take=",movies.settings.take);
 				buildUrlMovies();
 			}
 		}
 		if(msg.data.movie){
 			if(msg.data.movie.details){
-				//console.log('we got movie_details');
+				console.log('got movie_details');
 				stats.called.movie.details++
 				movie.main=msg.data.movie.details;
-				//console.log("value=",movies.main);
+				console.log("movies.main=",movies.main);
 				buildUrlMovies();
 			}
 			if(msg.data.movie.id){
-				//console.log('we got movie_id');
+				console.log('got movie_id');
 				stats.called.movie.id++
 				movie.id=msg.data.movie.id;
-				//console.log("value=",movies.id);
+				console.log("movies.id=",movies.id);
 				buildUrlMovies();
 			}
 		}
@@ -95,28 +89,29 @@ self.onmessage = function (msg) {
 			//console.log('we got timer4Check');
 			//console.log("value=",msg.data.timer4Check);
 			if(msg.data.timer.command==="start"){
-				//console.log('we got timer4Start');
-				stats.called.timer.start++;
-				startTimerInterval();
+				console.log('got timer Start');
+				console.warn("Timer start is disabled");
+				//stats.called.timer.start++;
+				//startTimerInterval();
 			}else
 			if(msg.data.timer.command==="stop"){
-				//console.log('we got timer4Stop');
+				console.log('got timer Stop');
 				stats.called.timer.stop++;
 				stopTimerInterval();
 			}
 			if(msg.data.timer.mcycle){
-				//console.log('we got timer4Mcycle');
+				console.log('got timer Mcycle');
 				stats.called.timer.mcycle++;
-				//console.log("value=",msg.data.timer.mcycle);
 				stats.called.timer4Check++;
 				timerForCheckingModificationl.mcycle=msg.data.timer.mcycle;
+				console.log("timerForCheckingModificationl.mcycle=",timerForCheckingModificationl.mcycle);
 			}
 			if(msg.data.timer.mfire){
-				//console.log('we got timer4Mfire');
+				console.log('got timer Mfire');
 				stats.called.timer.mfire++;
-				//console.log("value=",msg.data.timer.mfire);
 				stats.called.timer4Check++;
 				timerForCheckingModificationl.mfire=msg.data.timer.mfire;
+				console.log("timerForCheckingModificationl.mfire=",timerForCheckingModificationl.mfire);
 			}
 		}
 		
@@ -171,12 +166,15 @@ function stopTimerInterval(){
 function buildUrlMovies(){
 	//console.groupCollapsed('buildUrlMovies');
 	//console.log('mode=',mode);
+	urlMovies="";
 	if(mode===1){
-		if (!movies.settings.category || !movies.settings.searchParam) {
-			urlMovies = movieUrl + `?take=${movies.settings.take}&skip=${movies.settings.skip}`;
-		} else {
-			urlMovies = movieUrl + `?${movies.settings.category}=${movies.settings.searchParam}&take=${movies.settings.take}&skip=${movies.settings.skip}`;
-		}	
+		urlMovies=movieUrl + "?take="+movies.settings.take+"&skip=" + movies.settings.skip;
+		for (var key in movies.settings.searchParam){ 
+			let arrayOfKeysApproved=["Title","Year","Runtime","Genre","Language","Country","Poster","imdbRating","imdbVotes","imdbID","Type"];
+			if(arrayOfKeysApproved.indexOf(key) > -1){
+			urlMovies+="&"+key+"="+movies.settings.searchParam[key];
+			}
+		}
 	}else
 	if(mode===2){
 		urlMovies = movieUrl +"/"+movie.id;
